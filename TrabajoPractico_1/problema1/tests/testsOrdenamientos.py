@@ -2,9 +2,9 @@
 
 import unittest
 import random
-from modules import burbuja
-from modules import quicksort
-from modules import residuo
+from modules.funciones import burbuja
+from modules.funciones import quicksort
+from modules.funciones import residuo
 
 class testPruebaOrden(unittest.TestCase):
 
@@ -13,8 +13,8 @@ class testPruebaOrden(unittest.TestCase):
         self.correcto = sorted(self.lista) #le doy el resultado correcto al que deberia llegar cada algoritmo
 
     def test_burbuja(self):
-        resultado = burbuja(self.lista.copy())
-        self.assertEqual(resultado, self.correcto)
+        resultado = burbuja(self.lista.copy()) #con el metodo copy() le paso una copia de la lista original creada aleatoriamente entonces no se modifica
+        self.assertEqual(resultado, self.correcto) #comparo que el algoritmo funcione correctamente
     
     def test_quicksort(self):
         resultado = quicksort(self.lista.copy())
