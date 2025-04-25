@@ -2,13 +2,16 @@
 
 import unittest
 import random
+import sys #tuvimos que hacer esto porque este .py esta adentro de tests y funciones esta dentro de modules, lo sacamos de internet
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from modules.funciones import burbuja
 from modules.funciones import quicksort
-from modules.funciones import residuo
+from modules. funciones import residuo
 
 class testPruebaOrden(unittest.TestCase):
 
-    def __init__(self):
+    def setUp(self):
         self.lista = [random.randint(10000, 99999) for _ in range(1000)] #creo la lista de 1000 elementos
         self.correcto = sorted(self.lista) #le doy el resultado correcto al que deberia llegar cada algoritmo
 

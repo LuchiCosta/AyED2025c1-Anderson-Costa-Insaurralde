@@ -7,7 +7,7 @@ def burbuja(lista):
             if lista[j]>lista[j+1]: #si el numero en la posicion j es mayor al siguiente, sucede:
                 lista[j], lista[j+1] = lista[j+1], lista[j] #intercambio las posiciones
             
-            #return lista
+    return lista
 
 def quicksort(lista):
     if len(lista) <= 1: #si la lista tiene un solo elemento o esta vacia, devuelve la lista porque ya esta ordenada
@@ -22,8 +22,6 @@ def residuo(lista):
     maximo = max(lista) #busco el maximo para saber cuantos digitos recorremos
     exponente = 1 #empieza en 1
     while maximo // exponente > 0:
-        #residuo_aux(lista, exponente) #llamo la auxiliar
-        #exp*=10 #aumento para pasar de unidades a decenas, despues a centenas, etc
         conteo = [0] * 10 #conteo de 10 elementos
         salida = [0] * len(lista) #esta lista guarda elementos de la lista original almacenados
 
@@ -37,13 +35,14 @@ def residuo(lista):
         i = len(lista) - 1 #recorro la lista desde el final hacia el inicio
         while i >= 0:
             indice = lista[i] // exponente #digito en la posicion i
-            salida[conteo[indice % 10] - 1] #coloco el numero en la posicion correcta
+            salida[conteo[indice % 10] - 1] = lista[i] #coloco el numero en la posicion correcta
             conteo[indice % 10] -= 1 #contador para el digito actual
             i -= 1 #muevo al siguiente elemento en la lista original
         
         lista = salida
         exponente *= 10 #paso a la siguiente posicion de digito
 
+    return salida
 
 
 

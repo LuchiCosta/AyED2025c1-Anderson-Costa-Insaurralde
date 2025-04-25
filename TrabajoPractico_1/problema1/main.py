@@ -11,6 +11,7 @@ tamanos = [1, 50, 100, 300, 500, 700, 1000] #rango de entre 1 y 1000 para poder 
 tiempo_burbuja = []
 tiempo_quicksort = [] #creo listas para alamacenar los tiempos de ejecucion en los distintos tamaños
 tiempo_residuo = []
+tiempo_sorted = []
 
 for i in tamanos:
     datos = [random.randint(10000, 99999) for _ in range(i)] #creo lista de numeros aleatorios, con tamaño i (i recorre la lista tamanos que va variando)
@@ -33,13 +34,20 @@ for i in tamanos:
     fin = time.time() #finalizo el tiempo
     tiempo_residuo.append(fin - inicio) #guardo los datos en la lista de tiempo
 
+    copia_sorted = datos.copy() #copia de la lista original
+    inicio = time.time() #comienzo a tomar el tiempo   
+    sorted(copia_sorted) #ejecuto el algoritmo
+    fin = time.time() #finalizo el tiempo
+    tiempo_sorted.append(fin - inicio) #guardo los datos en la lista de tiempo
+
 plt.figure(figsize=(12, 6))
 plt.plot(tamanos, tiempo_burbuja, label = 'Burbuja', color = 'blue')
 plt.plot(tamanos, tiempo_quicksort, label = 'Quicksort', color = 'green')
 plt.plot(tamanos, tiempo_residuo, label = 'Residuo', color = 'red')
+plt.plot(tamanos, tiempo_sorted, label = 'Sorted', color = 'black')
 plt.xlabel('Tamaño de la lista')
 plt.ylabel('Tiempo de ejecución en segundos')
-plt.title('Comparacion tiempo de algoritmos de ordenamiento')
+plt.title('Comparación tiempo de algoritmos de ordenamiento')
 plt.legend()
 plt.grid(True)
 plt.show()
@@ -58,7 +66,11 @@ plt.show()
 # lista ordenada y, la creación de esta nueva lista tiene un pequeño costo en cuanto a rendimiento. Su complejidad es de O(n log n) y se mantiene
 # estable. 
 
-#Funcionamiento de sorted(): Primero inspecciona la 
+#Funcionamiento de sorted(): Primero inspecciona la lista y se fija si ya hay partes ordenadas, si encuentra partes chicas desordenadas utiliza 
+# "insertion sort" para ordenarlas, creando bloques ordenados chicos. Seguidamente fusiona estos bloques pequeños y los hace mas grandes, siguiendo 
+# reglas de que fusionar y cuando. Continua fusionando los bloques hasta que la lista se convierte en un unico bloque.
+
+
 
 
 
