@@ -14,10 +14,10 @@ class ListaDobleEnlazada:
         self.tamanio = 0 #inicia en cero
     
     def esta_vacia(self):
-        return self.primero is None #si devuelve true, esta vacia
+        return self.cabeza is None #si devuelve true, esta vacia
     
     def __len__(self):
-        return self._tamanio #devuelve la cantidad elementos de la lista
+        return self.tamanio #devuelve la cantidad elementos de la lista
 
     def agregar_al_inicio(self, item):
         nuevo = nodo(item) #agregamos un nuevo nodo al inicio
@@ -29,7 +29,7 @@ class ListaDobleEnlazada:
             nuevo.siguiente = self.cabeza #nuevo nodo apunta a la cabeza actual
             self.cabeza.anterior = nuevo #la cabeza actual apunta al nuevo nodo
             self.cabeza = nuevo #la cabeza es el nuevo nodo
-        self._tamanio += 1 #aumenta el tamaño de la lista en 1 
+        self.tamanio += 1 #aumenta el tamaño de la lista en 1 
 
     def agregar_al_final(self, item):
         nuevo = nodo(item)
@@ -62,21 +62,27 @@ class ListaDobleEnlazada:
             self.tamanio += 1
 
     def extraer(self, posicion=None):
-        if self.esta_vacia():
-            raise IndexError("Lísta vacía")
         if posicion is None:
             posicion = self.tamanio - 1
-        if posicion < 0  or posicion >= self.tamanio:
-            raise IndexError("Posición inválida")
-        if posicion == 0:
-            dato = self.cabeza.dato
+        if posicion < -1 or posicion >= self.tamanio:
+            raise IndexError("Valor de posicion invalido")
+        if self.tamanio == 0:
+            raise IndexError("No se puede extraer de una lista vacía")
+
+        dato_devolver = None
+
+        if self.tamanio == 1:
+            dato_devolver = self.cabeza.dato
+            self.cabeza = self.cola = None
+        elif posicion == 0:
+            dato_devolver = self.cabeza.dato
             self.cabeza = self.cabeza.siguiente
             if self.cabeza:
-                self.cabeza.anteior = None
+                self.cabeza.anterior = None
             else:
                 self.cola = None
         elif posicion == self.tamanio - 1:
-            dato = self.cola.dato
+            dato_devolver = self.cola.dato
             self.cola = self.cola.anterior
             if self.cola:
                 self.cola.siguiente = None
@@ -85,13 +91,18 @@ class ListaDobleEnlazada:
         else:
             actual = self.cabeza
             for _ in range(posicion):
-                actual = actual.siguiente
-            dato = actual.dato
-            actual.anterior.siguiente = actual.siguiente
-            actual.siguiente.anterior = actual.anterior
-        
-        self._tamanio -= 1
-        return dato
+               actual = actual.siguiente
+            n_extraer = actual  
+            dato_devolver = n_extraer.dato
+            anterior = n_extraer.anterior
+            siguiente = n_extraer.siguiente
+            if anterior:
+                anterior.siguiente = siguiente
+            if siguiente:
+                siguiente.anterior = anterior
+
+        self.tamanio -= 1
+        return dato_devolver
     
     def copiar(self):
         copia = ListaDobleEnlazada()
@@ -120,6 +131,12 @@ class ListaDobleEnlazada:
         resultado = self.copiar()
         resultado.concatenar(otraLista)
         return resultado
+    
+    def __iter__(self): #defino un metodo para iterar
+        actual = self.cabeza 
+        while actual:
+            yield actual.dato  #el yield va viendo cada nodo
+            actual = actual.siguiente #recorre desde el primer al ultimo nodo
     
 
 

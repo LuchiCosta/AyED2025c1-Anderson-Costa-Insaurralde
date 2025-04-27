@@ -1,39 +1,57 @@
-import time
-import matplotlib.pyplot as plt
-from modules.modulo1 import ListaDobleEnlazada
+if posicion is None:
+            posicion = self.tamanio - 1
+        if posicion < 0  or posicion >= self.tamanio:
+            raise IndexError("Posición inválida")
+        if posicion == 0:
+            dato = self.cabeza.dato
+            self.cabeza = self.cabeza.siguiente
+            if self.cabeza is not None: #me fijo que si no es None, que el anterior lo sea
+                self.cabeza.anteior = None
+            else:
+                self.cola = None
+        elif posicion == self.tamanio - 1:
+            dato = self.cola.dato
+            self.cola = self.cola.anterior
+            if self.cola:
+                self.cola.siguiente = None
+            else:
+                self.cabeza = None
+        else:
+            actual = self.cabeza
+            for _ in range(posicion):
+                actual = actual.siguiente
+            dato = actual.dato
+            actual.anterior.siguiente = actual.siguiente
+            actual.siguiente.anterior = actual.anterior
+        
+        self.tamanio -= 1
+        return dato
 
-def medir_tiempos():
-    tamanos = [1, 50, 100, 200, 300, 500, 700, 1000]  # De 1 a 1000 elementos
-    tiempos_len = []
-    tiempos_copiar = []
-    tiempos_invertir = []
+if posicion < -1 or posicion > self.tamanio:
+            raise IndexError("Valor de posicion invalido")
+        if self.tamanio == 1:
+            dato = self.cabeza
+            self.cabeza = None
+            self.cola = None 
+        elif posicion==0:
+            dato = self.cabeza
+            self.cabeza = dato.siguiente
+            self.cabeza.anterior = None
+        elif posicion == -1 or posicion == self.tamanio-1:
+            dato = self.cola
+            self.cola = dato.anterior
+            self.cola.siguiente = None
+        else:
+            dato = self.cabeza
+            for i in range(posicion):
+                dato = dato.siguiente
+                
+            dato.anterior.siguiente = dato.siguiente
+            dato.siguiente.anterior = dato.anterior
+        self.tamanio -= 1
+        return dato
 
-    for n in tamanos:
-        lista = ListaDobleEnlazada()
-        for i in range(n):
-            lista.agregar_al_final(i)
-
-        inicio = time.time()
-        len(lista)
-        tiempos_len.append(time.time() - inicio)
-
-        inicio = time.time()
-        lista.copiar()
-        tiempos_copiar.append(time.time() - inicio)
-
-        inicio = time.time()
-        lista.invertir()
-        tiempos_invertir.append(time.time() - inicio)
-
-    plt.figure(figsize=(12, 6))
-    plt.plot(tamanos, tiempos_len, label="len()", color='violet')
-    plt.plot(tamanos, tiempos_copiar, label="copiar()", color='pink')
-    plt.plot(tamanos, tiempos_invertir, label="invertir()", color='red')
-    plt.xlabel("Tamaño de la lista (N)")
-    plt.ylabel("Tiempo de ejecución (segundos)")
-    plt.title("Tiempos de ejecución de métodos en Lista Doblemente Enlazada")
-    plt.legend()
-    plt.grid(True)
-    plt.show()
-
-medir_tiempos()
+anterior = actual.anterior
+            siguiente = actual.siguiente
+            anterior.siguiente = siguiente
+            siguiente.anterior = anterior
