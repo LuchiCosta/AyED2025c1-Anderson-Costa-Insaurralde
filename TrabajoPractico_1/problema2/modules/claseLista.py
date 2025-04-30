@@ -61,48 +61,40 @@ class ListaDobleEnlazada:
             actual.anterior = nuevo 
             self.tamanio += 1
 
-    def extraer(self, posicion=None):
+    def extraer(self, posicion = None): #me posiciono uno antes del elemento
         if posicion is None:
-            posicion = self.tamanio - 1
-        if posicion < -1 or posicion >= self.tamanio:
-            raise IndexError("Valor de posicion invalido")
-        if self.tamanio == 0:
-            raise IndexError("No se puede extraer de una lista vacía")
-
-        dato_devolver = None
-
-        if self.tamanio == 1:
-            dato_devolver = self.cabeza.dato
-            self.cabeza = self.cola = None
-        elif posicion == 0:
-            dato_devolver = self.cabeza.dato
-            self.cabeza = self.cabeza.siguiente
-            if self.cabeza:
-                self.cabeza.anterior = None
-            else:
-                self.cola = None
-        elif posicion == self.tamanio - 1:
-            dato_devolver = self.cola.dato
+            print("entro a none")
+            actual = self.cola
             self.cola = self.cola.anterior
-            if self.cola:
-                self.cola.siguiente = None
-            else:
-                self.cabeza = None
-        else:
+            self.cola.siguiente = None
+        elif posicion == self.tamanio -1 or posicion == -1:
+            print("entra")
+            actual = self.cola
+            self.cola = actual.anterior
+            self.cola.siguiente = None
+            print("sale")
+        elif posicion < 0 or posicion >= self.tamanio:
+            raise IndexError("Posición inválida")
+        elif posicion == 0:
+            print
+            actual = self.cabeza
+            self.cabeza = actual.siguiente
+            self.cabeza.anterior = None
+        elif self.tamanio == 1:
+            actual = self.cabeza
+            self.cabeza = None
+            self.cola = None
+        if  posicion !=None  and posicion < (self.tamanio-1) and posicion>0:
+            print ("Entro al loop")
             actual = self.cabeza
             for _ in range(posicion):
-               actual = actual.siguiente
-            n_extraer = actual  
-            dato_devolver = n_extraer.dato
-            anterior = n_extraer.anterior
-            siguiente = n_extraer.siguiente
-            if anterior:
-                anterior.siguiente = siguiente
-            if siguiente:
-                siguiente.anterior = anterior
-
+                actual  = actual.siguiente
+        
+            actual.anterior.siguiente = actual.siguiente #recordar dibujito de la fila :)
+            actual.siguiente.anterior = actual.anterior 
+        
         self.tamanio -= 1
-        return dato_devolver
+        return actual.dato
     
     def copiar(self):
         copia = ListaDobleEnlazada()
@@ -137,6 +129,25 @@ class ListaDobleEnlazada:
         while actual:
             yield actual.dato  #el yield va viendo cada nodo
             actual = actual.siguiente #recorre desde el primer al ultimo nodo
+
+    
+    
+if __name__ == "__main__":
+    lista1 = ListaDobleEnlazada()
+    for i in range(10):
+        lista1.agregar_al_final(i)
+    
+    print("lista original")
+
+    for i in lista1:
+        print(i)
+    
+    print("extraigo un elemento")
+    print("valor extraido: ", lista1.extraer(0))
+
+    for i in lista1:
+        print(i)
+
     
 
 
