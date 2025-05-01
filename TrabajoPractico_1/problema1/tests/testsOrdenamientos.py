@@ -2,9 +2,6 @@
 
 import unittest
 import random
-import sys #tuvimos que hacer esto porque este .py esta adentro de tests y funciones esta dentro de modules, lo sacamos de internet
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from modules.funciones import burbuja
 from modules.funciones import quicksort
 from modules. funciones import residuo
