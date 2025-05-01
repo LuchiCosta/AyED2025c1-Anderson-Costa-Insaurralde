@@ -63,16 +63,13 @@ class ListaDobleEnlazada:
 
     def extraer(self, posicion = None): #me posiciono uno antes del elemento
         if posicion is None:
-            print("entro a none")
             actual = self.cola
             self.cola = self.cola.anterior
             self.cola.siguiente = None
         elif posicion == self.tamanio -1 or posicion == -1:
-            print("entra")
             actual = self.cola
             self.cola = actual.anterior
             self.cola.siguiente = None
-            print("sale")
         elif posicion < 0 or posicion >= self.tamanio:
             raise IndexError("Posición inválida")
         elif posicion == 0:
@@ -85,7 +82,6 @@ class ListaDobleEnlazada:
             self.cabeza = None
             self.cola = None
         if  posicion !=None  and posicion < (self.tamanio-1) and posicion>0:
-            print ("Entro al loop")
             actual = self.cabeza
             for _ in range(posicion):
                 actual  = actual.siguiente
@@ -131,22 +127,6 @@ class ListaDobleEnlazada:
             actual = actual.siguiente #recorre desde el primer al ultimo nodo
 
     
-    
-if __name__ == "__main__":
-    lista1 = ListaDobleEnlazada()
-    for i in range(10):
-        lista1.agregar_al_final(i)
-    
-    print("lista original")
-
-    for i in lista1:
-        print(i)
-    
-    print("extraigo un elemento")
-    print("valor extraido: ", lista1.extraer(0))
-
-    for i in lista1:
-        print(i)
 
     
 
