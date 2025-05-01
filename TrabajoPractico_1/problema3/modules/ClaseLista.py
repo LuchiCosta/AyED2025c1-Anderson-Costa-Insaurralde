@@ -61,6 +61,8 @@ class ListaDobleEnlazada:
             self.tamanio += 1
 
     def extraer(self, posicion = None): #me posiciono uno antes del elemento
+        if self.tamanio == 0:
+            raise IndexError("La lista está vacía")
         if posicion is None:
             actual = self.cola
             self.cola = self.cola.anterior
@@ -68,14 +70,15 @@ class ListaDobleEnlazada:
         elif posicion == self.tamanio -1 or posicion == -1:
             actual = self.cola
             self.cola = actual.anterior
-            self.cola.siguiente = None
+            if self.cola:
+                self.cola.siguiente = None
         elif posicion < 0 or posicion >= self.tamanio:
             raise IndexError("Posición inválida")
         elif posicion == 0:
-            print
             actual = self.cabeza
             self.cabeza = actual.siguiente
-            self.cabeza.anterior = None
+            if self.cabeza:
+                self.cabeza.anterior = None
         elif self.tamanio == 1:
             actual = self.cabeza
             self.cabeza = None
