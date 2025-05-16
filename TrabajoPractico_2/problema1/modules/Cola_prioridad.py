@@ -82,3 +82,46 @@ class ColaPrioridad:
             self.infiltrar_abajo(i)
             i -= 1
 
+    def esta_vacia(self):
+        """
+        Devuelve True si la cola está vacía, False en caso contrario.
+        """
+        return self.tamanio == 0
+
+
+
+class Paciente:
+    def __init__(self, riesgo, llegada, nombre):
+        self.riesgo = riesgo        # 1: crítico, 2: moderado, 3: bajo
+        self.llegada = llegada      # número que representa el orden de llegada
+        self.nombre = nombre
+
+    def __lt__(self, otro):
+        """
+        Define el criterio de prioridad para el heap:
+        - menor riesgo (valor más bajo) tiene mayor prioridad
+        - si el riesgo es igual, se prioriza el que llegó antes
+        """
+        if self.riesgo != otro.riesgo:
+            return self.riesgo < otro.riesgo
+        else:
+            return self.llegada < otro.llegada
+
+    def __str__(self):
+        return f"{self.nombre} (riesgo: {self.riesgo}, llegada: {self.llegada})"
+    
+
+if __name__ == "__main__":
+    cola = ColaPrioridad()
+
+    # Simulación del ingreso de pacientes con riesgo y orden de llegada
+    cola.agregar_paciente(Paciente(2, 1, "María"))
+    cola.agregar_paciente(Paciente(1, 2, "Juan"))
+    cola.agregar_paciente(Paciente(3, 3, "Luis"))
+    cola.agregar_paciente(Paciente(1, 4, "Ana"))
+
+    print("Orden de atención:")
+    while not cola.esta_vacia():
+        paciente = cola.eliminar_paciente()
+        print(paciente)
+
