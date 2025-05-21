@@ -1,10 +1,10 @@
 class NodoArbol:
     def __init__(self,clave,valor=None,izquierdo=None,derecho=None,padre=None):
-        self.clave = clave #fecha
-        self.valor = valor #temeperatura
-        self.hijoIzquierdo = izquierdo
-        self.hijoDerecho = derecho
-        self.padre = padre
+        self.__clave = clave #fecha
+        self.__valor = valor #temperatura
+        self.__hijoIzquierdo = izquierdo
+        self.__hijoDerecho = derecho
+        self.__padre = padre
 
     def tieneHijoIzquierdo(self):
         return self.hijoIzquierdo
@@ -43,8 +43,8 @@ class NodoArbol:
 class ArbolBinarioEquilibrado:
 
     def __init__(self):
-        self.raiz = None
-        self.tamano = 0
+        self.__raiz = None
+        self.__tamano = 0
 
     def longitud(self):
         return self.tamano
@@ -134,4 +134,13 @@ class ArbolBinarioEquilibrado:
                     self.rotarIzquierda(nodo.hijoIzquierdo)
                     self.rotarDerecha(nodo)
                 else:
-                    self.rotarDerecha(nodo)        
+                    self.rotarDerecha(nodo)     
+
+    def eliminar_nodo(self, nodo):
+        # metodo para borrar un nodo 
+        pass
+
+# agregar un metodo para devolver valores
+    def devolver(self):
+        pass
+    
