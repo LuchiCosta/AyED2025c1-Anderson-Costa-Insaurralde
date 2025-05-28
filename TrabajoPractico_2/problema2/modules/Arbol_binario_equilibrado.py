@@ -5,6 +5,55 @@ class NodoArbol:
         self.__hijoIzquierdo = izquierdo
         self.__hijoDerecho = derecho
         self.__padre = padre
+        self.__factorEquilibrio = 0
+    
+    @property #permite acceder a lo privado
+    def clave(self):
+        return self.__clave
+    
+    @clave.setter #permite modificar
+    def clave(self, nueva_clave):
+        self.__clave = nueva_clave
+    
+    @property
+    def valor(self):
+        return self.__valor
+    
+    @valor.setter
+    def valor(self, nuevo_valor):
+        self.__valor = nuevo_valor
+    
+    @property
+    def hijoIzquierdo(self):
+        return self.__hijoIzquierdo
+    
+    @hijoIzquierdo.setter
+    def hijoIzquierdo(self, nuevo_hijo):
+        self.__hijoIzquierdo = nuevo_hijo
+    
+    @property
+    def hijoDerecho(self):
+        return self.__hijoDerecho
+    
+    @hijoDerecho.setter
+    def hijoDerecho(self, nuevo_hijo):
+        self.__hijoDerecho = nuevo_hijo
+    
+    @property
+    def padre(self):
+        return self.__padre
+    
+    @padre.setter
+    def padre(self, nuevo_padre):
+        self.__padre = nuevo_padre
+    
+    @property
+    def factorEquilibrio(self):
+        return self.__factorEquilibrio
+    
+    @factorEquilibrio.setter
+    def factorEquilibrio(self, nuevo_factor):
+        self.__factorEquilibrio = nuevo_factor
 
     def tieneHijoIzquierdo(self):
         return self.hijoIzquierdo
@@ -45,6 +94,22 @@ class ArbolBinarioEquilibrado:
     def __init__(self):
         self.__raiz = None
         self.__tamano = 0
+    
+    @property
+    def raiz(self):
+         return self.__raiz
+    
+    @raiz.setter
+    def raiz(self, nueva_raiz):
+        self.__raiz = nueva_raiz
+    
+    @property
+    def tamano(self):
+        return self.__tamano
+    
+    @tamano.setter
+    def tamano(self, nuevo_tamano):
+        self.__tamano = nuevo_tamano
 
     def longitud(self):
         return self.tamano
@@ -136,11 +201,176 @@ class ArbolBinarioEquilibrado:
                 else:
                     self.rotarDerecha(nodo)     
 
-    def eliminar_nodo(self, nodo):
-        # metodo para borrar un nodo 
-        pass
+    def obtener(self, clave):
+        # Método público para obtener el valor (temperatura) asociado a una clave (fecha)
+        if self.raiz: 
+            res = self._obtener(clave, self.raiz) 
+            if res: 
+                return res.valor 
+            else: 
+                return None 
+        else: 
+            return None 
 
-# agregar un metodo para devolver valores
-    def devolver(self):
-        pass
+    def _obtener(self, clave, nodoActual):
+        # Método auxiliar recursivo para buscar un nodo por su clave
+        if not nodoActual: 
+            return None 
+        elif nodoActual.clave == clave: # Si la clave del nodo actual coincide con la clave buscada
+            return nodoActual 
+        elif clave < nodoActual.clave: # Si la clave buscada es menor que la clave del nodo actual
+            return self._obtener(clave, nodoActual.hijoIzquierdo) # Busca recursivamente en el subárbol izquierdo
+        else: # Si la clave buscada es mayor que la clave del nodo actual
+            return self._obtener(clave, nodoActual.hijoDerecho) # Busca recursivamente en el subárbol derecho
+
+    def eliminar(self, clave):
+        # Método público para eliminar un nodo con una clave específica
+        if self.tamano > 1: # Si el árbol tiene más de un nodo
+            nodoARemover = self._obtener(clave, self.raiz) # Busca el nodo a remover
+            if nodoARemover: # Si el nodo fue encontrado
+                self._eliminar(nodoARemover) # Llama al método auxiliar _eliminar para removerlo
+                self.tamano -= 1 # Decrementa el tamaño del árbol
+            else: # Si el nodo no fue encontrado
+                raise KeyError("La clave no se encuentra en el árbol") # Lanza una excepción
+        elif self.tamano == 1 and self.raiz.clave == clave: # Si el árbol tiene solo un nodo y es el que se quiere eliminar
+            self.raiz = None # La raíz se vuelve None (árbol vacío)
+            self.tamano = 0 # El tamaño se vuelve 0
+        else: # Si el árbol está vacío o el nodo no se encuentra
+            raise KeyError("La clave no se encuentra en el árbol") # Lanza una excepción
+
+    def _eliminar(self, nodoActual):
+        # Método auxiliar privado para eliminar un nodo específico
+        if nodoActual.esHoja(): # Caso 1: El nodo a eliminar es una hoja
+            if nodoActual == nodoActual.padre.hijoIzquierdo: # Si es el hijo izquierdo de su padre
+                nodoActual.padre.hijoIzquierdo = None # Desconecta el nodo del lado izquierdo del padre
+            else: # Si es el hijo derecho de su padre
+                nodoActual.padre.hijoDerecho = None # Desconecta el nodo del lado derecho del padre
+            self.actualizarEquilibrioEliminacion(nodoActual.padre, 'hoja', nodoActual.esHijoIzquierdo()) # Actualiza el balance desde el padre
+
+        elif nodoActual.tieneAmbosHijos(): # Caso 2: El nodo a eliminar tiene ambos hijos
+            sucesor = nodoActual.encontrarSucesor() # Encuentra el sucesor (el nodo más pequeño en su subárbol derecho)
+            # Primero actualizamos el balanceo del padre del sucesor antes de mover el sucesor
+            self.actualizarEquilibrioEliminacion(sucesor.padre, 'sucesor', sucesor.esHijoIzquierdo())
+            sucesor.empalmar() # Desconecta el sucesor de su posición original
+            nodoActual.clave = sucesor.clave # Reemplaza la clave del nodo a eliminar con la clave del sucesor
+            nodoActual.valor = sucesor.valor # Reemplaza el valor del nodo a eliminar con el valor del sucesor
+        else: # Caso 3: El nodo a eliminar tiene un solo hijo (izquierdo o derecho)
+            if nodoActual.tieneHijoIzquierdo(): # Si tiene hijo izquierdo
+                if nodoActual.esHijoIzquierdo(): # Si el nodo actual es hijo izquierdo de su padre
+                    nodoActual.hijoIzquierdo.padre = nodoActual.padre # El hijo del nodo a eliminar se conecta al padre del nodo a eliminar
+                    nodoActual.padre.hijoIzquierdo = nodoActual.hijoIzquierdo # El padre del nodo a eliminar apunta al hijo
+                elif nodoActual.esHijoDerecho(): # Si el nodo actual es hijo derecho de su padre
+                    nodoActual.hijoIzquierdo.padre = nodoActual.padre # El hijo del nodo a eliminar se conecta al padre del nodo a eliminar
+                    nodoActual.padre.hijoDerecho = nodoActual.hijoIzquierdo # El padre del nodo a eliminar apunta al hijo
+                else: # Si el nodo actual es la raíz y tiene un hijo izquierdo
+                    nodoActual.hijoIzquierdo.padre = None # El hijo izquierdo se convierte en la nueva raíz (sin padre)
+                    self.raiz = nodoActual.hijoIzquierdo # Actualiza la raíz del árbol
+                self.actualizarEquilibrioEliminacion(nodoActual.padre, 'un_hijo', nodoActual.esHijoIzquierdo()) # Actualiza el balance
+            else: # Si tiene hijo derecho
+                if nodoActual.esHijoIzquierdo(): # Si el nodo actual es hijo izquierdo de su padre
+                    nodoActual.hijoDerecho.padre = nodoActual.padre # El hijo del nodo a eliminar se conecta al padre del nodo a eliminar
+                    nodoActual.padre.hijoIzquierdo = nodoActual.hijoDerecho # El padre del nodo a eliminar apunta al hijo
+                elif nodoActual.esHijoDerecho(): # Si el nodo actual es hijo derecho de su padre
+                    nodoActual.hijoDerecho.padre = nodoActual.padre # El hijo del nodo a eliminar se conecta al padre del nodo a eliminar
+                    nodoActual.padre.hijoDerecho = nodoActual.hijoDerecho # El padre del nodo a eliminar apunta al hijo
+                else: # Si el nodo actual es la raíz y tiene un hijo derecho
+                    nodoActual.hijoDerecho.padre = None # El hijo derecho se convierte en la nueva raíz (sin padre)
+                    self.raiz = nodoActual.hijoDerecho # Actualiza la raíz del árbol
+                self.actualizarEquilibrioEliminacion(nodoActual.padre, 'un_hijo', nodoActual.esHijoIzquierdo()) # Actualiza el balance
+
+    def actualizarEquilibrioEliminacion(self, nodo, tipo_eliminacion, era_hijo_izquierdo):
+        # Método para actualizar el factor de equilibrio después de una eliminación
+        # y propagar los ajustes hacia arriba.
+        if nodo is None: # Caso base: si el nodo es None, no hay nada que hacer
+            return
+
+        # Ajusta el factor de equilibrio del nodo actual basado en el tipo de eliminación y de qué lado era el hijo
+        if tipo_eliminacion == 'hoja': # Si el nodo eliminado era una hoja
+            if era_hijo_izquierdo: # Y era el hijo izquierdo
+                nodo.factorEquilibrio -= 1 # El subárbol izquierdo del padre se acortó
+            else: # Y era el hijo derecho
+                nodo.factorEquilibrio += 1 # El subárbol derecho del padre se acortó
+        elif tipo_eliminacion == 'un_hijo': # Si el nodo eliminado tenía un solo hijo
+            if era_hijo_izquierdo: # Y era el hijo izquierdo
+                nodo.factorEquilibrio -= 1 # El subárbol izquierdo del padre se acortó
+            else: # Y era el hijo derecho
+                nodo.factorEquilibrio += 1 # El subárbol derecho del padre se acortó
+        elif tipo_eliminacion == 'sucesor': # Si la eliminación afectó a un sucesor (al moverlo)
+            if era_hijo_izquierdo: # Y el sucesor era hijo izquierdo de su padre original
+                nodo.factorEquilibrio -= 1 # El subárbol izquierdo de su padre original se acortó
+            else: # Y el sucesor era hijo derecho de su padre original
+                nodo.factorEquilibrio += 1 # El subárbol derecho de su padre original se acortó
+            
+        # Reequilibra si el factor de equilibrio está fuera de rango
+        if nodo.factorEquilibrio > 1 or nodo.factorEquilibrio < -1:
+            self.reequilibrar(nodo) # Realiza las rotaciones necesarias
+            # Después de reequilibrar, si el nodo rotado no es la raíz y su FE se volvió 0 (rotación simple)
+            # no se necesita propagar más. Si su FE no es 0 (rotación doble), se propaga.
+            # Aquí, la lógica simplificada asume que reequilibrar ya maneja la propagación del factor de equilibrio.
+        elif nodo.factorEquilibrio == 0: # Si el factor de equilibrio del nodo se volvió 0 (después de un ajuste)
+            if nodo.padre: # Y tiene padre
+                # Propagamos el ajuste hacia arriba, porque el cambio de altura se propagó hasta aquí
+                self.actualizarEquilibrioEliminacion(nodo.padre, tipo_eliminacion, nodo.esHijoIzquierdo())
+
+#aca estan los metodos para devolver:
+
+    def max_temp(self, fecha1, fecha2, nodoActual, maxActual):
+        # Método recursivo para encontrar la temperatura máxima en un rango de fechas
+        if not nodoActual: # Caso base: si el nodo actual es None (no hay más nodos para revisar)
+            return maxActual # Retorna el máximo actual encontrado
+
+        # Si el nodo actual está dentro del rango de fechas
+        if fecha1 <= nodoActual.clave <= fecha2:
+            if maxActual is None or nodoActual.valor > maxActual: # Si es la primera temperatura o es mayor que la actual máxima
+                maxActual = nodoActual.valor # Actualiza la temperatura máxima
+            # Explora ambos hijos porque el rango puede abarcar partes de ambos subárboles
+            maxActual = self.max_temp(fecha1, fecha2, nodoActual.hijoIzquierdo, maxActual) # Busca en el hijo izquierdo
+            maxActual = self.max_temp(fecha1, fecha2, nodoActual.hijoDerecho, maxActual) # Busca en el hijo derecho
+        elif nodoActual.clave < fecha1: # Si la clave del nodo actual es menor que la fecha de inicio del rango
+            # El valor máximo en el rango solo puede estar en el subárbol derecho (valores mayores)
+            maxActual = self.max_temp(fecha1, fecha2, nodoActual.hijoDerecho, maxActual)
+        else: # nodoActual.clave > fecha2 (Si la clave del nodo actual es mayor que la fecha final del rango)
+            # El valor máximo en el rango solo puede estar en el subárbol izquierdo (valores menores)
+            maxActual = self.max_temp(fecha1, fecha2, nodoActual.hijoIzquierdo, maxActual)
+        return maxActual # Devuelve el máximo encontrado después de la recursión
+
+    def min_temp(self, fecha1, fecha2, nodoActual, minActual):
+        # Método recursivo para encontrar la temperatura mínima en un rango de fechas (similar a get_max_in_range)
+        if not nodoActual: # Caso base: si el nodo actual es None
+            return minActual # Retorna el mínimo actual encontrado
+
+        # Si el nodo actual está dentro del rango de fechas
+        if fecha1 <= nodoActual.clave <= fecha2:
+            if minActual is None or nodoActual.valor < minActual: # Si es la primera temperatura o es menor que la actual mínima
+                minActual = nodoActual.valor # Actualiza la temperatura mínima
+            # Explora ambos hijos
+            minActual = self.min_temp(fecha1, fecha2, nodoActual.hijoIzquierdo, minActual) # Busca en el hijo izquierdo
+            minActual = self.min_temp(fecha1, fecha2, nodoActual.hijoDerecho, minActual) # Busca en el hijo derecho
+        elif nodoActual.clave < fecha1: # Si la clave del nodo actual es menor que la fecha de inicio
+            # El valor mínimo solo puede estar en el subárbol derecho
+            minActual = self.min_temp(fecha1, fecha2, nodoActual.hijoDerecho, minActual)
+        else: # nodoActual.clave > fecha2 (Si la clave del nodo actual es mayor que la fecha final)
+            # El valor mínimo solo puede estar en el subárbol izquierdo
+            minActual = self.min_temp(fecha1, fecha2, nodoActual.hijoIzquierdo, minActual)
+        return minActual # Devuelve el mínimo encontrado
+
+    def temperaturas_rango(self, fecha1, fecha2, nodoActual, resultados):
+        # Método recursivo para obtener todas las temperaturas en un rango, ordenadas por fecha (recorrido in-order)
+        if not nodoActual: # Caso base: si el nodo actual es None
+            return # Termina la recursión
+
+        # Recorre el subárbol izquierdo si es necesario (para mantener el orden)
+        if nodoActual.tieneHijoIzquierdo() and nodoActual.clave >= fecha1: # Solo ir a la izquierda si el nodo actual no es menor que el inicio del rango
+            self.temperaturas_rango(fecha1, fecha2, nodoActual.hijoIzquierdo, resultados)
+
+        # Si la clave del nodo actual está dentro del rango, la agrega a los resultados
+        if fecha1 <= nodoActual.clave <= fecha2:
+            resultados.append(f"{nodoActual.clave.strftime('%d/%m/%Y')}: {nodoActual.valor:.2f} ºC") # Formatea y agrega
+
+        # Recorre el subárbol derecho si es necesario (para mantener el orden)
+        if nodoActual.tieneHijoDerecho() and nodoActual.clave <= fecha2: # Solo ir a la derecha si el nodo actual no es mayor que el fin del rango
+            self.temperaturas_rango(fecha1, fecha2, nodoActual.hijoDerecho, resultados)
+
+
+
     
