@@ -1,93 +1,4 @@
-class NodoArbol:
-    def __init__(self,clave,valor=None,izquierdo=None,derecho=None,padre=None):
-        self.__clave = clave #fecha
-        self.__valor = valor #temperatura
-        self.__hijoIzquierdo = izquierdo
-        self.__hijoDerecho = derecho
-        self.__padre = padre
-        self.__factorEquilibrio = 0
-    
-    @property #permite acceder a lo privado
-    def clave(self):
-        return self.__clave
-    
-    @clave.setter #permite modificar
-    def clave(self, nueva_clave):
-        self.__clave = nueva_clave
-    
-    @property
-    def valor(self):
-        return self.__valor
-    
-    @valor.setter
-    def valor(self, nuevo_valor):
-        self.__valor = nuevo_valor
-    
-    @property
-    def hijoIzquierdo(self):
-        return self.__hijoIzquierdo
-    
-    @hijoIzquierdo.setter
-    def hijoIzquierdo(self, nuevo_hijo):
-        self.__hijoIzquierdo = nuevo_hijo
-    
-    @property
-    def hijoDerecho(self):
-        return self.__hijoDerecho
-    
-    @hijoDerecho.setter
-    def hijoDerecho(self, nuevo_hijo):
-        self.__hijoDerecho = nuevo_hijo
-    
-    @property
-    def padre(self):
-        return self.__padre
-    
-    @padre.setter
-    def padre(self, nuevo_padre):
-        self.__padre = nuevo_padre
-    
-    @property
-    def factorEquilibrio(self):
-        return self.__factorEquilibrio
-    
-    @factorEquilibrio.setter
-    def factorEquilibrio(self, nuevo_factor):
-        self.__factorEquilibrio = nuevo_factor
-
-    def tieneHijoIzquierdo(self):
-        return self.hijoIzquierdo
-
-    def tieneHijoDerecho(self):
-        return self.hijoDerecho
-
-    def esHijoIzquierdo(self):
-        return self.padre and self.padre.hijoIzquierdo == self
-
-    def esHijoDerecho(self):
-        return self.padre and self.padre.hijoDerecho == self
-
-    def esRaiz(self):
-        return not self.padre
-
-    def esHoja(self):
-        return not (self.hijoDerecho or self.hijoIzquierdo)
-
-    def tieneAlgunHijo(self):
-        return self.hijoDerecho or self.hijoIzquierdo
-
-    def tieneAmbosHijos(self):
-        return self.hijoDerecho and self.hijoIzquierdo
-
-    def reemplazarDatoDeNodo(self,clave,valor,hizq,hder):
-        self.clave = clave
-        self.valor = valor
-        self.hijoIzquierdo = hizq
-        self.hijoDerecho = hder
-        if self.tieneHijoIzquierdo():
-            self.hijoIzquierdo.padre = self
-        if self.tieneHijoDerecho():
-            self.hijoDerecho.padre = self
+from modules.nodoArbol import NodoArbol
 
 class ArbolBinarioEquilibrado:
 
@@ -314,7 +225,7 @@ class ArbolBinarioEquilibrado:
 
 #aca estan los metodos para devolver:
 
-    def max_temp(self, fecha1, fecha2, nodoActual, maxActual):
+    def maxima_temp(self, fecha1, fecha2, nodoActual, maxActual):
         # Método recursivo para encontrar la temperatura máxima en un rango de fechas
         if not nodoActual: # Caso base: si el nodo actual es None (no hay más nodos para revisar)
             return maxActual # Retorna el máximo actual encontrado
@@ -324,17 +235,17 @@ class ArbolBinarioEquilibrado:
             if maxActual is None or nodoActual.valor > maxActual: # Si es la primera temperatura o es mayor que la actual máxima
                 maxActual = nodoActual.valor # Actualiza la temperatura máxima
             # Explora ambos hijos porque el rango puede abarcar partes de ambos subárboles
-            maxActual = self.max_temp(fecha1, fecha2, nodoActual.hijoIzquierdo, maxActual) # Busca en el hijo izquierdo
-            maxActual = self.max_temp(fecha1, fecha2, nodoActual.hijoDerecho, maxActual) # Busca en el hijo derecho
+            maxActual = self.maxima_temp(fecha1, fecha2, nodoActual.hijoIzquierdo, maxActual) # Busca en el hijo izquierdo
+            maxActual = self.maxima_temp(fecha1, fecha2, nodoActual.hijoDerecho, maxActual) # Busca en el hijo derecho
         elif nodoActual.clave < fecha1: # Si la clave del nodo actual es menor que la fecha de inicio del rango
             # El valor máximo en el rango solo puede estar en el subárbol derecho (valores mayores)
-            maxActual = self.max_temp(fecha1, fecha2, nodoActual.hijoDerecho, maxActual)
+            maxActual = self.maxima_temp(fecha1, fecha2, nodoActual.hijoDerecho, maxActual)
         else: # nodoActual.clave > fecha2 (Si la clave del nodo actual es mayor que la fecha final del rango)
             # El valor máximo en el rango solo puede estar en el subárbol izquierdo (valores menores)
-            maxActual = self.max_temp(fecha1, fecha2, nodoActual.hijoIzquierdo, maxActual)
+            maxActual = self.maxima_temp(fecha1, fecha2, nodoActual.hijoIzquierdo, maxActual)
         return maxActual # Devuelve el máximo encontrado después de la recursión
 
-    def min_temp(self, fecha1, fecha2, nodoActual, minActual):
+    def minima_temp(self, fecha1, fecha2, nodoActual, minActual):
         # Método recursivo para encontrar la temperatura mínima en un rango de fechas (similar a get_max_in_range)
         if not nodoActual: # Caso base: si el nodo actual es None
             return minActual # Retorna el mínimo actual encontrado
@@ -344,14 +255,14 @@ class ArbolBinarioEquilibrado:
             if minActual is None or nodoActual.valor < minActual: # Si es la primera temperatura o es menor que la actual mínima
                 minActual = nodoActual.valor # Actualiza la temperatura mínima
             # Explora ambos hijos
-            minActual = self.min_temp(fecha1, fecha2, nodoActual.hijoIzquierdo, minActual) # Busca en el hijo izquierdo
-            minActual = self.min_temp(fecha1, fecha2, nodoActual.hijoDerecho, minActual) # Busca en el hijo derecho
+            minActual = self.minima_temp(fecha1, fecha2, nodoActual.hijoIzquierdo, minActual) # Busca en el hijo izquierdo
+            minActual = self.minima_temp(fecha1, fecha2, nodoActual.hijoDerecho, minActual) # Busca en el hijo derecho
         elif nodoActual.clave < fecha1: # Si la clave del nodo actual es menor que la fecha de inicio
             # El valor mínimo solo puede estar en el subárbol derecho
-            minActual = self.min_temp(fecha1, fecha2, nodoActual.hijoDerecho, minActual)
+            minActual = self.minima_temp(fecha1, fecha2, nodoActual.hijoDerecho, minActual)
         else: # nodoActual.clave > fecha2 (Si la clave del nodo actual es mayor que la fecha final)
             # El valor mínimo solo puede estar en el subárbol izquierdo
-            minActual = self.min_temp(fecha1, fecha2, nodoActual.hijoIzquierdo, minActual)
+            minActual = self.minima_temp(fecha1, fecha2, nodoActual.hijoIzquierdo, minActual)
         return minActual # Devuelve el mínimo encontrado
 
     def temperaturas_rango(self, fecha1, fecha2, nodoActual, resultados):
