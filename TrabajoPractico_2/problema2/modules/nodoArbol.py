@@ -97,3 +97,13 @@ class NodoArbol:
             while sucesor.tieneHijoIzquierdo():
                 sucesor = sucesor.hijoIzquierdo
         return sucesor
+
+    def __iter__(self):
+        if self:
+            if self.tieneHijoIzquierdo():
+                for elem in self.hijoIzquierdo:
+                    yield elem
+            yield self.clave
+            if self.tieneHijoDerecho():
+                for elem in self.hijoDerecho:
+                    yield elem

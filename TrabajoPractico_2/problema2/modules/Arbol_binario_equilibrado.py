@@ -281,7 +281,28 @@ class ArbolBinarioEquilibrado:
         # Recorre el subárbol derecho si es necesario (para mantener el orden)
         if nodoActual.tieneHijoDerecho() and nodoActual.clave <= fecha2: # Solo ir a la derecha si el nodo actual no es mayor que el fin del rango
             self.temperaturas_rango(fecha1, fecha2, nodoActual.hijoDerecho, resultados)
+    def __iter__(self):
+        return self.raiz.__iter__()
+    
+class Iterador:
+    def __init__(self, arbol, clave):
+        self.raiz = arbol._obtener(clave, arbol.raiz)
 
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        salida = self.raiz
+        if salida:
+            self.raiz = salida.encontrarSucesor()
+
+        if not salida:
+            raise StopIteration # corta la itracion cuando salida es none
+
+        return salida
+
+    def __str__(self):
+        return str(self.raiz)
 
 
     

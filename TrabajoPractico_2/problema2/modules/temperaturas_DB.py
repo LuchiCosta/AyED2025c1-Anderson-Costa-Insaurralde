@@ -135,3 +135,6 @@ class Temperaturas_DB:
     def __iter__(self):
             return iter(self.__arbol)
     
+    def __contains__(self, clave):
+        return self.devolver_temperatura(clave) is not None
+    

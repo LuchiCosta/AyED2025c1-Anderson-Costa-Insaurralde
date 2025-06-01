@@ -1,13 +1,8 @@
 import unittest
 from modules.temperaturas_DB import Temperaturas_DB
 from modules.fecha import Fecha
-<<<<<<< HEAD
 from random import randint
 
-=======
-from modules.Arbol_binario_equilibrado import ArbolBinarioEquilibrado
-from random import randint
->>>>>>> aa3f3f253508713e6c54c3ce1393bb090e3bbfb6
 class TestTemperaturasDB(unittest.TestCase):
 
     def setUp(self):
