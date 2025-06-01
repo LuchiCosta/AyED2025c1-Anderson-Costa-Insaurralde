@@ -1,20 +1,11 @@
 import unittest
-import datetime
-# Importa la clase Temperaturas_DB del archivo donde la tengas definida
-# Asegúrate de que el nombre del archivo sea correcto, por ejemplo, temperaturas_avl.py
-from modules.nodoArbol import NodoArbol
-from modules.Arbol_binario_equilibrado import ArbolBinarioEquilibrado
 from modules.temperaturas_DB import Temperaturas_DB
-
+from modules.fecha import Fecha
+from random import randint
 
 class TestTemperaturasDB(unittest.TestCase):
 
     def setUp(self):
-        """
-        Se ejecuta antes de cada método de test.
-        Inicializa una nueva instancia de Temperaturas_DB para cada test
-        para asegurar que los tests sean independientes entre sí.
-        """
         self.db = Temperaturas_DB()
 
     def test_guardar_y_devolver_temperatura(self):
