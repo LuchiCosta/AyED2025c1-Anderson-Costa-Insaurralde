@@ -6,7 +6,9 @@ from modules.iterador import Iterador
 class Temperaturas_DB:
     def __init__(self):
         self.__arbol = ArbolBinarioEquilibrado()
-    
+
+
+
     def guardar_temperatura(self, temperatura, fecha):
         # guarda la medida de temperatura asociada a la fecha
         if type(fecha) == str:
@@ -125,3 +127,11 @@ class Temperaturas_DB:
         # devuelve la cantidad de muestras de la BD
         # seria la cantidad de nodos que tiene el arbol
         return f"Cantidad de muestras en la base de datos: {self.__arbol.tamano}" 
+    
+
+    def __len__(self):
+        return self.__arbol.tamano
+    
+    def __iter__(self):
+            return iter(self.__arbol)
+    
