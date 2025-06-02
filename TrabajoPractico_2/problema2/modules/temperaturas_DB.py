@@ -29,27 +29,27 @@ class Temperaturas_DB:
             print("No hay una temperatura para esa fecha")
         
     def max_temp_rango(self, fecha1, fecha2):
-        # devuelve la temperatura maxima entre los rangos de fecha1 y fecha2 inclusive, fecha1 es meno a fecha2. no implica que los
-        # intervalos del rango deban ser fechas incluidas previamente en el arbol
-        if type(fecha1) == str:
-            fecha1 = fecha1.rsplit("/")
-            fecha1 = Fecha(int(fecha1[0]), int(fecha1[1]), int(fecha1[2]))
+    # Convierte strings a objetos Fecha si es necesario
+        if isinstance(fecha1, str):
+            d, m, a = map(int, fecha1.split("/"))
+            fecha1 = Fecha(d, m, a)
             
-        if type(fecha2) == str:
-            fecha2 = fecha2.rsplit("/")
-            fecha2 = Fecha(int(fecha2[0]), int(fecha2[1]), int(fecha2[2]))
+        if isinstance(fecha2, str):
+            d, m, a = map(int, fecha2.split("/"))
+            fecha2 = Fecha(d, m, a)
 
-        iterador = Iterador(self.__arbol, fecha1)
-        maxima_temperatura = self.devolver_temperatura(fecha1)
+        maxima_temperatura = None
+        it = Iterador(self.__arbol, fecha1)  # comienza desde fecha1 (o el primer nodo mayor)
 
-        for temperatura in iterador:
-            if temperatura.__valor > maxima_temperatura: # si la temperatura es mayor a la que asigne
-                maxima_temperatura = temperatura.__valor # cambio el valor de mi maxima temperatura
-            
-            if temperatura.__clave == fecha2: # si la fecha es igual a la fecha 2
+        for temperatura in it:
+            if temperatura.__valor > maximaTemp:
+                maximaTemp = temperatura.__valor
+           
+            if temperatura.__clave == fecha2:
                 break
-
+            
         return maxima_temperatura
+
 
     def min_temp_rango(self, fecha1, fecha2):
         # devuelde la temperatura minima entre los rangos de fecha1 y fecha2 inclusive, fecha1 es menor a fecha2. no implica que los
@@ -127,6 +127,10 @@ class Temperaturas_DB:
         # devuelve la cantidad de muestras de la BD
         # seria la cantidad de nodos que tiene el arbol
         return f"Cantidad de muestras en la base de datos: {self.__arbol.tamano}" 
+    
+    def borrar (self):
+        # borra el arbol
+        self.__arbol = ArbolBinarioEquilibrado()
     
 
     def __len__(self):

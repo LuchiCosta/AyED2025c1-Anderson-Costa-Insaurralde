@@ -55,6 +55,12 @@ class NodoArbol:
     def factorEquilibrio(self, nuevo_factor):
         self.__factorEquilibrio = nuevo_factor
 
+    def get_valor(self):
+        return self.__valor
+    
+    def get_clave(self):
+        return self.__clave
+    
     def tieneHijoIzquierdo(self):
         return self.hijoIzquierdo
 

@@ -283,7 +283,12 @@ class ArbolBinarioEquilibrado:
             self.temperaturas_rango(fecha1, fecha2, nodoActual.hijoDerecho, resultados)
     def __iter__(self):
         return self.raiz.__iter__()
-    
+
+    def __getitem__(self, clave):
+        # Permite acceder a un nodo por su clave usando la sintaxis arbol[clave]
+        return self.obtener(clave)
+
+
 class Iterador:
     def __init__(self, arbol, clave):
         self.raiz = arbol._obtener(clave, arbol.raiz)
