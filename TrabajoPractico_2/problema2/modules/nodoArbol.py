@@ -1,11 +1,12 @@
 class NodoArbol:
-    def __init__(self,clave,valor=None,izquierdo=None,derecho=None,padre=None):
+    def __init__(self,clave,valor=None,izquierdo=None,derecho=None,padre=None,anio=None):
         self.__clave = clave #fecha
         self.__valor = valor #temperatura
         self.__hijoIzquierdo = izquierdo
         self.__hijoDerecho = derecho
         self.__padre = padre
         self.__factorEquilibrio = 0
+        self.__anio = anio  # Nuevo atributo
     
     @property #permite acceder a lo privado
     def clave(self):
@@ -55,12 +56,24 @@ class NodoArbol:
     def factorEquilibrio(self, nuevo_factor):
         self.__factorEquilibrio = nuevo_factor
 
-    def get_valor(self):
-        return self.__valor
+    @property
+    def anio(self):
+        return self.__anio
+
+    @anio.setter
+    def anio(self, nuevo_anio):
+        self.__anio = nuevo_anio
     
-    def get_clave(self):
-        return self.__clave
-    
+    def empalmar(self):
+        # Desconecta este nodo de su padre y ajusta los punteros de los hijos
+        if self.padre:
+            if self.esHijoIzquierdo():
+                self.padre.hijoIzquierdo = self.hijoDerecho
+            else:
+                self.padre.hijoDerecho = self.hijoDerecho
+        if self.hijoDerecho:
+            self.hijoDerecho.padre = self.padre
+
     def tieneHijoIzquierdo(self):
         return self.hijoIzquierdo
 
@@ -103,6 +116,10 @@ class NodoArbol:
             while sucesor.tieneHijoIzquierdo():
                 sucesor = sucesor.hijoIzquierdo
         return sucesor
+    
+    def __str__(self):
+        # Permite la representación como string
+        return f"{self.clave} - {self.valor}" if self.valor is not None else str(self.clave)
 
     def __iter__(self):
         if self:

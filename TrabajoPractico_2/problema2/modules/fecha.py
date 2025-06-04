@@ -68,9 +68,10 @@ class Fecha:
             return True
         else:
             return False
+# ampliar para poder sumar dias uno por uno
 
 if __name__ == "__main__":
-    fecha1 = Fecha(12, 10, 2008)
+    fecha1 = Fecha(12, 10, 2006)
     fecha2 = Fecha(12, 10, 2006)
     
-    print(fecha1 >fecha2)    
+    print(fecha1 ==fecha2)    
