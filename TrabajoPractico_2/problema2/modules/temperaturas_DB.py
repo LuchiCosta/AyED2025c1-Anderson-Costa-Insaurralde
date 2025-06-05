@@ -1,4 +1,3 @@
-
 from modules.Arbol_binario_equilibrado import ArbolBinarioEquilibrado
 from modules.fecha import Fecha
 from modules.iterador import Iterador
@@ -24,19 +23,18 @@ class Temperaturas_DB:
             
         self.__arbol.agregar(fecha, temperatura)
 
-    def devolver_temperatura(self, fecha:str):
-        #devuelve la medida de temperatura en la fecha determinada
-        if type(fecha) == str:
+    def devolver_temperatura(self, fecha):
+        # Acepta tanto string como objeto Fecha
+        if isinstance(fecha, str):
             fecha = fecha.rsplit("/")
             fecha = Fecha(int(fecha[0]), int(fecha[1]), int(fecha[2]))
-        else:
-            print("No es string !!!  :(")
+        elif not isinstance(fecha, Fecha):
+            print("Tipo de fecha no válido")
             return None
 
         try:
             temp_salida = self.__arbol.obtener(fecha)
             return temp_salida
-        
         except KeyError:
             print("No hay una temperatura para esa fecha")
             return None
@@ -44,30 +42,6 @@ class Temperaturas_DB:
         
     def max_temp_rango(self, fecha1, fecha2):
     # Convierte strings a objetos Fecha si es necesario
-        if isinstance(fecha1, str):
-            d, m, a = map(int, fecha1.split("/"))
-            fecha1 = Fecha(d, m, a)
-            
-        if isinstance(fecha2, str):
-            d, m, a = map(int, fecha2.split("/"))
-            fecha2 = Fecha(d, m, a)
-
-        maxima_temperatura = None
-        it = Iterador(self.__arbol, fecha1)  # comienza desde fecha1 (o el primer nodo mayor)
-
-        for temperatura in it:
-            if temperatura.__valor > maximaTemp:
-                maximaTemp = temperatura.__valor
-           
-            if temperatura.__clave == fecha2:
-                break
-            
-        return maxima_temperatura
-
-
-    def min_temp_rango(self, fecha1, fecha2):
-        # devuelde la temperatura minima entre los rangos de fecha1 y fecha2 inclusive, fecha1 es menor a fecha2. no implica que los
-        # intervalos del rango deban ser fechas incluidas previamente en el arbol
         if type(fecha1) == str:
             fecha1 = fecha1.rsplit("/")
             fecha1 = Fecha(int(fecha1[0]), int(fecha1[1]), int(fecha1[2]))
@@ -75,20 +49,40 @@ class Temperaturas_DB:
         if type(fecha2) == str:
             fecha2 = fecha2.rsplit("/")
             fecha2 = Fecha(int(fecha2[0]), int(fecha2[1]), int(fecha2[2]))
+        
+        maxima_temperatura = None
+        it = Iterador(self.__arbol, fecha1)
 
-        iterador = Iterador(self.__arbol, fecha1)
-        minima_temperatura = self.devolver_temperatura(fecha1)
+        for nodo in it:
+        # Suponiendo que nodo.clave y nodo.valor existen
+            if fecha1 <= nodo.clave <= fecha2:
+                if (maxima_temperatura is None) or (nodo.valor > maxima_temperatura):
+                    maxima_temperatura = nodo.valor
+            # No cortar el bucle aquí
 
-        for temperatura in iterador:
-            if temperatura.__valor < minima_temperatura: # si la temperatura es mayor a la que asigne
-                minima_temperatura = temperatura.__valor # cambio el valor de mi maxima temperatura
-            
-            if temperatura.__clave == fecha2: # si la fecha es igual a la fecha 2
-                break
+        return maxima_temperatura
+
+
+    def min_temp_rango(self, fecha1, fecha2):
+        if type(fecha1) == str:
+            fecha1 = fecha1.rsplit("/")
+            fecha1 = Fecha(int(fecha1[0]), int(fecha1[1]), int(fecha1[2]))
+        if type(fecha2) == str:
+            fecha2 = fecha2.rsplit("/")
+            fecha2 = Fecha(int(fecha2[0]), int(fecha2[1]), int(fecha2[2]))
+
+        minima_temperatura = None
+        fecha_actual = fecha1
+        while fecha_actual <= fecha2:
+            temp = self.devolver_temperatura(fecha_actual)
+            if temp is not None:
+                if (minima_temperatura is None) or (temp < minima_temperatura):
+                    minima_temperatura = temp
+            fecha_actual = fecha_actual.sumar_dias(1)
 
         return minima_temperatura
     
-    def temp_extremos_rango(self, fecha1:str, fecha2:str):
+    def temp_extremos_rango(self, fecha1, fecha2):
         # devuelve la temperatura minima y maxima entre los rangos fecha1 y fecha2 inclusive, fecha1 menor que fecha2
         if type(fecha1) == str:
             fecha1 = fecha1.rsplit("/")
@@ -125,21 +119,23 @@ class Temperaturas_DB:
         # temp en gradoc centigrados ordenado por fechas
         fechas_en_rango = []
 
-        for fecha_str in self.__arbol:
-            # Convertimos el string "dd/mm/aaaa" a un objeto Fecha
-            dia, mes, anio = map(int, fecha_str.split("/")) # convierte los valores a enteros
-            fecha = Fecha(dia, mes, anio)
+        if type(fecha1) == str:
+            fecha1 = fecha1.rsplit("/")
+            fecha1 = Fecha(int(fecha1[0]), int(fecha1[1]), int(fecha1[2]))
+            
+        if type(fecha2) == str:
+            fecha2 = fecha2.rsplit("/")
+            fecha2 = Fecha(int(fecha2[0]), int(fecha2[1]), int(fecha2[2]))
 
-            if fecha1 <= fecha <= fecha2:
-                fechas_en_rango.append(fecha)
+        fecha_actual = fecha1
 
-        if fechas_en_rango:
-            # Ordenar las fechas usando los operadores definidos en tu clase Fecha
-            for fecha in sorted(fechas_en_rango): # sorted ordena
-                print(f"{fecha}: {self.devolver_temperatura(str(fecha))} °C")
-        else:
-            print("No hay mediciones en este rango")
-                  
+        while fecha_actual <= fecha2:
+            temp = self.devolver_temperatura(fecha_actual)
+            if temp is not None:
+                fechas_en_rango.append((fecha_actual, temp))
+            fecha_actual = fecha_actual.sumar_dias(1)
+        return fechas_en_rango
+
     def cantidad_muestras(self):
         # devuelve la cantidad de muestras de la BD
         # seria la cantidad de nodos que tiene el arbol
@@ -163,10 +159,10 @@ if __name__ == "__main__":
     mediciones = Temperaturas_DB()
 
 
-    mediciones.guardar_temperatura(1, "20/12/2000")
+    mediciones.guardar_temperatura(15, "20/12/2000")
     mediciones.guardar_temperatura(3, "21/12/2000")
-    mediciones.guardar_temperatura(15, "22/12/2000")
-    mediciones.guardar_temperatura(6, "23/12/2000")
+    mediciones.guardar_temperatura(5, "22/12/2000")
+    mediciones.guardar_temperatura(2, "23/12/2000")
     mediciones.guardar_temperatura(-8, "24/12/2000")
     mediciones.guardar_temperatura(12, "25/12/2000")
     mediciones.guardar_temperatura(37, "26/12/2000")
@@ -183,29 +179,21 @@ if __name__ == "__main__":
     mediciones.borrar_temperatura("22/12/2000")
     print(mediciones.cantidad_muestras())
     
-    mediciones.devolver_temperaturas("27/12/2000", "29/12/2000")
-    # print("\n----Prueba de mostrar temperaturas----\n")
-    # mediciones.devolver_temperaturas()
+    resultados = mediciones.devolver_temperaturas("25/12/2000", "29/12/2000")
+    print("Las temperaturas en el rango son:")
+    for fecha, temp in resultados:
+        print(f"{fecha}: {temp}°C")
+
+    print("La temperatura máxima en el rango es:")
+    print(mediciones.max_temp_rango("25/12/2000", "29/12/2000"))
     
-    # print("\n----Prueba de devolver temperatura----\n")
-    #  for medicion in mediciones:
-    #     print(mediciones.devolver_temperatura(medicion))
-    # fecha = input("Introducir fecha dd/mm/aaaa: ")
-    # print("La medicion es de: ", mediciones.devolver_temperatura(fecha))
+    print("La temperatura minima en el rango es:")
+    print(mediciones.min_temp_rango("25/12/2000", "29/12/2000"))
     
-    # print("\n----Prueba de max temperaturas----\n")
-    # fecha1 = input("Introducir fecha1 dd/mm/aaaa: ")
-    # fecha2 = input("Introducir fecha2 dd/mm/aaaa: ") 
-    # valores = mediciones.temp_extremos_rango(fecha1, fecha2)
-    # print(f"Son:\nMáximo: {valores[1]}\nMínimo: {valores[0]}")
-        
-    
-    # opc = input("¿Desea borrar la base? [S]i o [N]o: ")
-    # opc.upper()
-    # if opc == 'S':
-    #     print("\n----Prueba de borrar BD----\n")
-    #     mediciones.borrar()
-    #     mediciones.cantidad_muestras()
+    valores = mediciones.temp_extremos_rango("20/12/2000", "23/12/2000")
+    print(f"Temperatura mínima: {valores[0]}")
+    print(f"Temperatura máxima: {valores[1]}")
 
 
-    
+
+

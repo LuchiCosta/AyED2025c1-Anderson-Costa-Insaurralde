@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+
 class Fecha:
     def __init__(self, dia, mes, anio):
         self._dia = dia
@@ -69,9 +71,28 @@ class Fecha:
         else:
             return False
 # ampliar para poder sumar dias uno por uno
+    def to_date(self):
+        """Convierte el objeto Fecha a un objeto datetime.date"""
+        return date(self._anio, self._mes, self._dia)
+
+    @classmethod
+    def from_date(cls, d):
+        """Crea un objeto Fecha desde un objeto datetime.date"""
+        return cls(d.day, d.month, d.year)
+
+    def sumar_dias(self, dias):
+        """Devuelve un nuevo objeto Fecha sumando 'dias' días"""
+        nueva_fecha = self.to_date() + timedelta(days=dias)
+        return Fecha.from_date(nueva_fecha)
 
 if __name__ == "__main__":
     fecha1 = Fecha(12, 10, 2006)
-    fecha2 = Fecha(12, 10, 2006)
+    fecha2 = Fecha(17, 10, 2006)
     
-    print(fecha1 ==fecha2)    
+    print(fecha1 ==fecha2)
+    #probamos que funcione sumar los dias 
+    lista_fechas = []
+    while fecha1<= fecha2:
+        lista_fechas.append(str(fecha1))
+        fecha1 = fecha1.sumar_dias(1)
+    print(lista_fechas)
