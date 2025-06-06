@@ -1,25 +1,88 @@
-# módulo para organizar funciones o clases utilizadas en nuestro proyecto
-# Crear tantos módulos como sea necesario para organizar el código
+from modules.Grafo import Grafo
+import heapq
 
-from modules.grafo import Grafo
-
-def construirGrafo(archivoPalabras):
-    d = {}
+def construir_grafo_aldeas(path_archivo): 
     g = Grafo()
-    archivo = open(archivoPalabras,'r')
-    # crear baldes de palabras que se diferencian por una letra
-    for linea in archivo:
-        palabra = linea[:-1]
-        for i in range(len(palabra)):
-            balde = palabra[:i] + '_' + palabra[i+1:]
-            if balde in d:
-                d[balde].append(palabra)
-            else:
-                d[balde] = [palabra]
-    # agregar vértices y aristas para palabras en el mismo balde
-    for balde in d.keys():
-        for palabra1 in d[balde]:
-            for palabra2 in d[balde]:
-                if palabra1 != palabra2:
-                    g.agregarArista(palabra1,palabra2)
+    with open(path_archivo, encoding="utf-8") as f:
+        for linea in f:
+            linea = linea.strip()
+            if not linea:  # Ignora líneas vacías
+                continue
+            partes = [p.strip() for p in linea.split(",")]
+            if len(partes) == 3:
+                origen = partes[0]
+                destino = partes[1]
+                distancia = int(partes[2])
+                g.agregarArista(origen, destino, distancia)
+            elif len(partes) == 1 and partes[0]:
+                g.agregarVertice(partes[0])
     return g
+
+def aldeas_alfabetico(grafo):
+    # Devuelve una lista de aldeas ordenadas alfabéticamente
+    return sorted(grafo.obtenerVertices())
+
+def dijkstra(grafo, inicio): 
+    for v in grafo:
+        v.asignarDistancia(float('inf'))
+        v.asignarPredecesor(None)
+    grafo.obtenerVertice(inicio).asignarDistancia(0)
+    heap = [(0, grafo.obtenerVertice(inicio).obtenerId(), grafo.obtenerVertice(inicio))]
+    while heap:
+        dist, _, actual = heapq.heappop(heap)
+        for vecino in actual.obtenerConexiones():
+            nueva_dist = dist + actual.obtenerPonderacion(vecino)
+            if nueva_dist < vecino.obtenerDistancia():
+                vecino.asignarDistancia(nueva_dist)
+                vecino.asignarPredecesor(actual)
+                heapq.heappush(heap, (nueva_dist, vecino.obtenerId(), vecino))
+
+def obtener_rutas(grafo, inicio):
+    # Devuelve una lista de diccionarios, cada uno con la info de una aldea
+    rutas = []
+    for v in grafo:
+        nombre = v.obtenerId()
+        pred = v.obtenerPredecesor()
+        recibe_de = pred.obtenerId() if pred else None
+        rutas.append({"nombre": nombre, "recibe_de": recibe_de, "envia_a": []})
+    # Llenar envia_a
+    nombre_a_ruta = {r["nombre"]: r for r in rutas}
+    for v in grafo:
+        pred = v.obtenerPredecesor()
+        if pred:
+            nombre_a_ruta[pred.obtenerId()]["envia_a"].append(v.obtenerId())
+    return rutas
+
+def suma_distancias(grafo, inicio):
+    # Calcula la suma total de las distancias desde el vértice de inicio a todos los demás vértices
+    total = 0
+    for v in grafo:
+        if v.obtenerId() != inicio:
+            pred = v.obtenerPredecesor()
+            if pred:
+                total += pred.obtenerPonderacion(v)
+    return total
+
+if __name__ == "__main__":
+    grafo = construir_grafo_aldeas("docs/aldeas.txt")
+    aldeas = aldeas_alfabetico(grafo)
+    dijkstra(grafo, "Peligros")
+    rutas = obtener_rutas(grafo, "Peligros")
+    total = suma_distancias(grafo, "Peligros")
+
+    print("Aldeas en orden alfabético:")
+    for aldea in aldeas:
+        print(aldea)
+
+    print("\nRutas óptimas:")
+    for ruta in rutas:
+        nombre = ruta["nombre"]
+        recibe = ruta["recibe_de"]
+        envia = ruta["envia_a"]
+        print(f"{nombre}: recibe de {recibe}, envía a {', '.join(envia) if envia else 'nadie'}")
+
+    print("\nSuma total de distancias:", total)
+
+    # print("Aldeas detectadas:")
+    # for v in grafo:
+    #     print(f"'{v.obtenerId()}'")
