@@ -1,4 +1,4 @@
-from modules.grafo import Grafo
+from modules.Grafo import Grafo
 from modules.vertice import Vertice
 
 def construir_grafo_aldeas(path_archivo): 
