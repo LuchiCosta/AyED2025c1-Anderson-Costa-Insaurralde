@@ -1,5 +1,5 @@
-from modules.Grafo import Grafo
-import heapq
+from modules.grafo import Grafo
+from modules.vertice import Vertice
 
 def construir_grafo_aldeas(path_archivo): 
     g = Grafo()
@@ -22,20 +22,28 @@ def aldeas_alfabetico(grafo):
     # Devuelve una lista de aldeas ordenadas alfabéticamente
     return sorted(grafo.obtenerVertices())
 
-def dijkstra(grafo, inicio): 
+def prim(grafo, inicio_id):
+    # Inicializar distancias y predecesores
     for v in grafo:
         v.asignarDistancia(float('inf'))
         v.asignarPredecesor(None)
-    grafo.obtenerVertice(inicio).asignarDistancia(0)
-    heap = [(0, grafo.obtenerVertice(inicio).obtenerId(), grafo.obtenerVertice(inicio))]
-    while heap:
-        dist, _, actual = heapq.heappop(heap)
+    inicio = grafo.obtenerVertice(inicio_id)
+    inicio.asignarDistancia(0)
+
+    # Cola de prioridad: lista de vértices no visitados
+    no_visitados = [v for v in grafo]
+
+    while no_visitados:
+        # Buscar el vértice con menor distancia
+        actual = min(no_visitados, key=lambda v: v.obtenerDistancia())
+        no_visitados.remove(actual)
+
         for vecino in actual.obtenerConexiones():
-            nueva_dist = dist + actual.obtenerPonderacion(vecino)
-            if nueva_dist < vecino.obtenerDistancia():
-                vecino.asignarDistancia(nueva_dist)
-                vecino.asignarPredecesor(actual)
-                heapq.heappush(heap, (nueva_dist, vecino.obtenerId(), vecino))
+            if vecino in no_visitados:
+                peso = actual.obtenerPonderacion(vecino)
+                if peso < vecino.obtenerDistancia():
+                    vecino.asignarDistancia(peso)
+                    vecino.asignarPredecesor(actual)
 
 def obtener_rutas(grafo, inicio):
     # Devuelve una lista de diccionarios, cada uno con la info de una aldea
@@ -66,7 +74,7 @@ def suma_distancias(grafo, inicio):
 if __name__ == "__main__":
     grafo = construir_grafo_aldeas("docs/aldeas.txt")
     aldeas = aldeas_alfabetico(grafo)
-    dijkstra(grafo, "Peligros")
+    prim(grafo, "Peligros")
     rutas = obtener_rutas(grafo, "Peligros")
     total = suma_distancias(grafo, "Peligros")
 
