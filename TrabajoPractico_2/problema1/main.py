@@ -1,50 +1,45 @@
-# -*- coding: utf-8 -*-
-"""
-Sala de emergencias
-"""
-
 import time
 import datetime
-import modules.paciente as pac
+from modules.paciente import Paciente
+from modules.Cola_prioridad import ColaPrioridad
 import random
 
-n = 20  # cantidad de ciclos de simulación
+n = 5  # cantidad de ciclos de simulación
 
-cola_de_espera = list()
+cola = ColaPrioridad()
+contador_llegada = 1  # Para asignar orden de llegada único
 
-# Ciclo que gestiona la simulación
 for i in range(n):
-    # Fecha y hora de entrada de un paciente
     ahora = datetime.datetime.now()
     fecha_y_hora = ahora.strftime('%d/%m/%Y %H:%M:%S')
     print('-*-'*15)
     print('\n', fecha_y_hora, '\n')
 
-    # Se crea un paciente un paciente por segundo
-    # La criticidad del paciente es aleatoria
-    paciente = pac.Paciente()
-    cola_de_espera.append(paciente)
+    # Se crea un paciente aleatorio y se le asigna orden de llegada
+    paciente = Paciente()
+    paciente.llegada = contador_llegada
+    contador_llegada += 1
+    cola.agregar(paciente)
+    print(f"Llega paciente: {paciente}")
 
-    # Atención de paciente en este ciclo: en el 50% de los casos
-    if random.random() < 0.5:
-        # se atiende paciente que se encuentra al frente de la cola
-        paciente_atendido = cola_de_espera.pop(0)
+    # En el 50% de los casos se atiende un paciente
+    if random.random() < 0.5 and not cola.esta_vacia():
+        paciente_atendido = cola.eliminar()
         print('*'*40)
         print('Se atiende el paciente:', paciente_atendido)
         print('*'*40)
-    else:
-        # se continúa atendiendo paciente de ciclo anterior
-        pass
-    
-    print()
 
-    # Se muestran los pacientes restantes en la cola de espera
-    print('Pacientes que faltan atenderse:', len(cola_de_espera))
-    for paciente in cola_de_espera:
-        print('\t', paciente)
-    
+    print()
+    print('Pacientes que faltan atenderse:', cola.tamanio)
+    for idx in range(1, cola.tamanio + 1):
+        print('\t', cola.cola_prioridad[idx])
     print()
     print('-*-'*15)
-    
     time.sleep(1)
+
+# Al final, atender a todos los pacientes restantes
+print("\nAtendiendo a todos los pacientes restantes por prioridad:")
+while not cola.esta_vacia():
+    paciente = cola.eliminar()
+    print('Se atiende el paciente:', paciente)
 
