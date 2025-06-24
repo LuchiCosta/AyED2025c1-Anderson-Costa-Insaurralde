@@ -1,5 +1,6 @@
 from modules.Grafo import Grafo
 from modules.vertice import Vertice
+from modules.Heap import MonticuloMin
 
 def construir_grafo_aldeas(path_archivo): 
     g = Grafo()
@@ -22,28 +23,30 @@ def aldeas_alfabetico(grafo):
     # Devuelve una lista de aldeas ordenadas alfabéticamente
     return sorted(grafo.obtenerVertices())
 
-def prim(grafo, inicio_id):
+def prim(grafo, inicio):
     # Inicializar distancias y predecesores
     for v in grafo:
         v.asignarDistancia(float('inf'))
         v.asignarPredecesor(None)
-    inicio = grafo.obtenerVertice(inicio_id)
-    inicio.asignarDistancia(0)
+    grafo.obtenerVertice(inicio).asignarDistancia(0)
 
-    # Cola de prioridad: lista de vértices no visitados
-    no_visitados = [v for v in grafo]
+    heap = MonticuloMin()
+    for v in grafo:
+        heap.insertar((v.obtenerDistancia(), v.obtenerId(), v))
 
-    while no_visitados:
-        # Buscar el vértice con menor distancia
-        actual = min(no_visitados, key=lambda v: v.obtenerDistancia())
-        no_visitados.remove(actual)
+    visitados = set()
 
+    while not heap.esta_vacio():
+        dist, nombre, actual = heap.extraer_min()
+        if nombre in visitados:
+            continue
+        visitados.add(nombre)
         for vecino in actual.obtenerConexiones():
-            if vecino in no_visitados:
-                peso = actual.obtenerPonderacion(vecino)
-                if peso < vecino.obtenerDistancia():
-                    vecino.asignarDistancia(peso)
-                    vecino.asignarPredecesor(actual)
+            peso = actual.obtenerPonderacion(vecino)
+            if vecino.obtenerId() not in visitados and peso < vecino.obtenerDistancia():
+                vecino.asignarDistancia(peso)
+                vecino.asignarPredecesor(actual)
+                heap.insertar((peso, vecino.obtenerId(), vecino))
 
 def obtener_rutas(grafo, inicio):
     # Devuelve una lista de diccionarios, cada uno con la info de una aldea
