@@ -8,10 +8,8 @@ probabilidades = [0.1, 0.3, 0.6]
 
 class Paciente:
     def __init__(self, riesgo=None, llegada=None, nombre=None):
-        """
-        Si no se pasan parámetros, crea un paciente aleatorio.
-        Si se pasan, usa los valores dados.
-        """
+        # Inicializa un paciente con un nivel de riesgo, hora de llegada y nombre.
+        # Si no se proporcionan, se generan aleatoriamente.
         if riesgo is None or llegada is None or nombre is None:
             n = len(nombres)
             self.nombre = f"{nombres[randint(0, n-1)]} {apellidos[randint(0, n-1)]}"
@@ -23,10 +21,7 @@ class Paciente:
             self.llegada = llegada
 
     def __lt__(self, otro):
-        """
-        Menor riesgo (valor más bajo) tiene mayor prioridad.
-        Si el riesgo es igual, se prioriza el que llegó antes.
-        """
+        # Compara dos pacientes primero por riesgo y luego por hora de llegada.
         if self.riesgo != otro.riesgo:
             return self.riesgo < otro.riesgo
         else:

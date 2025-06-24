@@ -1,7 +1,8 @@
 import time
 import datetime
 from modules.paciente import Paciente
-from modules.Cola_prioridad import ColaPrioridad
+from modules.Heap import MonticuloMin
+from modules.Cola import ColaPrioridad
 import random
 
 n = 5  # cantidad de ciclos de simulación
@@ -32,7 +33,7 @@ for i in range(n):
     print()
     print('Pacientes que faltan atenderse:', cola.tamanio)
     for idx in range(1, cola.tamanio + 1):
-        print('\t', cola.cola_prioridad[idx])
+        print('\t', cola.cola_prioridad.cola_prioridad[idx])
     print()
     print('-*-'*15)
     time.sleep(1)
