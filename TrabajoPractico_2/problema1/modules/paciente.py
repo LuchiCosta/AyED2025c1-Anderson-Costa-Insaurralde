@@ -13,24 +13,27 @@ class Paciente:
         if riesgo is None or llegada is None or nombre is None:
             n = len(nombres)
             self.nombre = f"{nombres[randint(0, n-1)]} {apellidos[randint(0, n-1)]}"
+            #elijo nombre y apellido al azar
             self.riesgo = choices(niveles_de_riesgo, probabilidades)[0]
-            self.llegada = None  # Se debe asignar llegada al agregar a la cola
+            #elijo riesgo al azar
+            self.llegada = None  # No se asigna hora de llegada al crear el paciente
         else:
             self.nombre = nombre
             self.riesgo = riesgo
             self.llegada = llegada
 
-    def __lt__(self, otro):
+    def __lt__(self, otro): #less than
         # Compara dos pacientes primero por riesgo y luego por hora de llegada.
-        if self.riesgo != otro.riesgo:
+        if self.riesgo != otro.riesgo: # riesgo mas bajo tiene mayor prioridad
             return self.riesgo < otro.riesgo
         else:
-            # Si llegada es None, no se puede comparar, así que lo dejamos igual
             if self.llegada is None or otro.llegada is None:
+                # si el riesgo es el mismo, comparo por hora de llegada
                 return False
             return self.llegada < otro.llegada
 
     def __str__(self):
+        # permite imprimir el paciente de forma legible.
         llegada_str = f", llegada: {self.llegada}" if self.llegada is not None else ""
         return f"{self.nombre} (riesgo: {self.riesgo}{llegada_str})"
 

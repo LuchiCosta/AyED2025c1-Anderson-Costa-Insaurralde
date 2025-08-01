@@ -31,90 +31,102 @@ class ArbolBinarioEquilibrado:
 
     def agregar(self,clave,valor):
         if self.raiz:
-            self._agregar(clave,valor,self.raiz)
+            self._agregar(clave,valor,self.raiz) #si ya hay raiz, uso el auxiliar
         else:
-            self.raiz = NodoArbol(clave,valor)
-        self.tamano = self.tamano + 1
+            self.raiz = NodoArbol(clave,valor) #si no hay raiz, creo una nueva
+        self.tamano = self.tamano + 1 # incremento el tamaño del arbol
 
     def _agregar(self,clave,valor,nodoActual):
-        if clave < nodoActual.clave:
-            if nodoActual.tieneHijoIzquierdo():
-                    self._agregar(clave,valor,nodoActual.hijoIzquierdo)
+        if clave < nodoActual.clave: #si el valor a agregar es menor, nos movemos a la izquierda
+            if nodoActual.tieneHijoIzquierdo(): 
+                    self._agregar(clave,valor,nodoActual.hijoIzquierdo) #si tiene hijo izquierdo, seguimos recursivamente
             else:
-                    nodoActual.hijoIzquierdo = NodoArbol(clave,valor,padre=nodoActual)
-                    self.actualizarEquilibrio(nodoActual.hijoIzquierdo)
+                    nodoActual.hijoIzquierdo = NodoArbol(clave,valor,padre=nodoActual) #si no tiene hijo izquierdo, lo agregamos
+                    self.actualizarEquilibrio(nodoActual.hijoIzquierdo) 
         else:
-            if nodoActual.tieneHijoDerecho():
-                    self._agregar(clave,valor,nodoActual.hijoDerecho)
+            if nodoActual.tieneHijoDerecho(): #si el valor a agregar es mayor, nos movemos a la derecha
+                    self._agregar(clave,valor,nodoActual.hijoDerecho) #lo mismo que si tiene izquierdo
             else:
-                    nodoActual.hijoDerecho = NodoArbol(clave,valor,padre=nodoActual)
+                    nodoActual.hijoDerecho = NodoArbol(clave,valor,padre=nodoActual) #si no tiene hijo derecho, lo agregamos
                     self.actualizarEquilibrio(nodoActual.hijoDerecho)
 
     def actualizarEquilibrio(self,nodo):
-        if nodo.factorEquilibrio > 1 or nodo.factorEquilibrio < -1:
-            self.reequilibrar(nodo)
+        if nodo.factorEquilibrio > 1 or nodo.factorEquilibrio < -1: #si esta desbalanceado  
+            self.reequilibrar(nodo) # reequilibra el nodo
             return
-        if nodo.padre != None:
+        if nodo.padre != None: #si no es la raiz, actualiza el factor de equilibrio del padre
+            #es como que voy subiendo por el arbol y actualizando los factores de equilibrio
             if nodo.esHijoIzquierdo():
-                    nodo.padre.factorEquilibrio += 1
+                    nodo.padre.factorEquilibrio += 1 #a la izquierda +1
             elif nodo.esHijoDerecho():
-                    nodo.padre.factorEquilibrio -= 1
+                    nodo.padre.factorEquilibrio -= 1 #a la derecha -1
 
-            if nodo.padre.factorEquilibrio != 0:
-                    self.actualizarEquilibrio(nodo.padre)
+            if nodo.padre.factorEquilibrio != 0: #sigo subiendo, si no es 0, sigo actualizando
+                    self.actualizarEquilibrio(nodo.padre) #llamo recursivamente al padre
 
-    def rotarIzquierda(self,rotRaiz):
-        nuevaRaiz = rotRaiz.hijoDerecho
-        rotRaiz.hijoDerecho = nuevaRaiz.hijoIzquierdo
+    def rotarIzquierda(self,rotRaiz): #rotRaiz es el nodo que se va a rotar
+        nuevaRaiz = rotRaiz.hijoDerecho #como es rotar izquierda, hago el hijo derecho la nueva raiz
+        rotRaiz.hijoDerecho = nuevaRaiz.hijoIzquierdo #el hijo izquierdo de la nueva raiz pasa a ser 
+        #el hijo derecho de la raiz rotada
         if nuevaRaiz.hijoIzquierdo != None:
-            nuevaRaiz.hijoIzquierdo.padre = rotRaiz
-        nuevaRaiz.padre = rotRaiz.padre
+            nuevaRaiz.hijoIzquierdo.padre = rotRaiz #si tiene hijo, actualizo al padre
+        nuevaRaiz.padre = rotRaiz.padre #reasigno el padre de la nueva raiz
         if rotRaiz.esRaiz():
-            self.raiz = nuevaRaiz
+            self.raiz = nuevaRaiz #si el nodo original era la raiz
         else:
             if rotRaiz.esHijoIzquierdo():
-                    rotRaiz.padre.hijoIzquierdo = nuevaRaiz
+                    rotRaiz.padre.hijoIzquierdo = nuevaRaiz #el hijo izquierdo del padre de la raiz rotada
+                    #pasa a ser la nueva raiz
             else:
-                rotRaiz.padre.hijoDerecho = nuevaRaiz
-        nuevaRaiz.hijoIzquierdo = rotRaiz
-        rotRaiz.padre = nuevaRaiz
+                rotRaiz.padre.hijoDerecho = nuevaRaiz #sino, hijo derecho 
+        nuevaRaiz.hijoIzquierdo = rotRaiz #le avisa que el hijo izquierdo es rotRaiz
+        rotRaiz.padre = nuevaRaiz #actualizo el padre
+        #actualizo factores de equilibrio
+        # +1 porque pierde un hijo derecho
         rotRaiz.factorEquilibrio = rotRaiz.factorEquilibrio + 1 - min(nuevaRaiz.factorEquilibrio, 0)
+        #+1 porque gana un hijo izquierdo
         nuevaRaiz.factorEquilibrio = nuevaRaiz.factorEquilibrio + 1 + max(rotRaiz.factorEquilibrio, 0)
     
     def rotarDerecha(self, rotRaiz):
-        nuevaRaiz = rotRaiz.hijoIzquierdo
-        rotRaiz.hijoIzquierdo = nuevaRaiz.hijoDerecho
+        nuevaRaiz = rotRaiz.hijoIzquierdo #el hijo izquierdo es la nueva raiz
+        rotRaiz.hijoIzquierdo = nuevaRaiz.hijoDerecho #el hijo derecho de la nueva raiz pasa a ser
+        #el hijo izquierdo de la raiz rotada
         if nuevaRaiz.hijoDerecho != None:
-            nuevaRaiz.hijoDerecho.padre = rotRaiz
-        nuevaRaiz.padre = rotRaiz.padre
+            nuevaRaiz.hijoDerecho.padre = rotRaiz #si tiene hijo, actualizo al padre
+        nuevaRaiz.padre = rotRaiz.padre #reasigno el padre de la nueva raiz
         if rotRaiz.esRaiz():
-            self.raiz = nuevaRaiz
+            self.raiz = nuevaRaiz #si el nodo original era la raiz
         else:
             if rotRaiz.esHijoIzquierdo():
-                rotRaiz.padre.hijoIzquierdo = nuevaRaiz
+                rotRaiz.padre.hijoIzquierdo = nuevaRaiz #si era hijo izquierdo, acomodo hacia adonde apunta 
+                #el padre del nodo rotado
             else:
-                rotRaiz.padre.hijoDerecho = nuevaRaiz
-        nuevaRaiz.hijoDerecho = rotRaiz
-        rotRaiz.padre = nuevaRaiz
+                rotRaiz.padre.hijoDerecho = nuevaRaiz #lo mismo si era hijo derecho
+        nuevaRaiz.hijoDerecho = rotRaiz #el hijo derecho de la nueva raiz es la raiz rotada
+        rotRaiz.padre = nuevaRaiz #actualizo el padre
+        #-1 porque pierde un hijo izquierdo, se resta porque si la nueva raiz estaba desbalanceada a la derecha,
+        #afecta al balance de la raiz rotada
         rotRaiz.factorEquilibrio = rotRaiz.factorEquilibrio - 1 - max(nuevaRaiz.factorEquilibrio, 0)
+        #-1 porque tiene un nuevo hijo derecho, se suma porque si la nueva raiz estaba desbalanceada a la izquierda,
+        #afecta al balance de la nueva raiz
         nuevaRaiz.factorEquilibrio = nuevaRaiz.factorEquilibrio - 1 + min(rotRaiz.factorEquilibrio, 0)
 
     def reequilibrar(self,nodo):
-        if nodo.factorEquilibrio < 0:
-                if nodo.hijoDerecho.factorEquilibrio > 0:
+        if nodo.factorEquilibrio < 0: #a la izquierda
+                if nodo.hijoDerecho.factorEquilibrio > 0: #derecha - izquierda (doble)
                     self.rotarDerecha(nodo.hijoDerecho)
                     self.rotarIzquierda(nodo)
                 else:
                     self.rotarIzquierda(nodo)
-        elif nodo.factorEquilibrio > 0:
-                if nodo.hijoIzquierdo.factorEquilibrio < 0:
+        elif nodo.factorEquilibrio > 0: #a la derecha
+                if nodo.hijoIzquierdo.factorEquilibrio < 0: #izquierda - derecha (doble)
                     self.rotarIzquierda(nodo.hijoIzquierdo)
                     self.rotarDerecha(nodo)
                 else:
                     self.rotarDerecha(nodo)     
 
     def obtener(self, clave):
-        # Método público para obtener el valor de la raiz
+        # Método público para obtener el valor de la raiz asociado a una clave específica
         if self.raiz: 
             res = self._obtener(clave, self.raiz) 
             if res: 
@@ -126,7 +138,7 @@ class ArbolBinarioEquilibrado:
 
     def _obtener(self, clave, nodoActual):
         # Método auxiliar recursivo para buscar un nodo por su clave
-        if not nodoActual: 
+        if not nodoActual: #no hay nodo
             return None 
         elif nodoActual.clave == clave: # Si la clave del nodo actual coincide con la clave buscada
             return nodoActual 
@@ -160,31 +172,32 @@ class ArbolBinarioEquilibrado:
             self.actualizarEquilibrioEliminacion(nodoActual.padre, 'hoja', nodoActual.esHijoIzquierdo()) # Actualiza el balance desde el padre
 
         elif nodoActual.tieneAmbosHijos(): # Caso 2: El nodo a eliminar tiene ambos hijos
-            sucesor = nodoActual.encontrarSucesor() # Encuentra el sucesor (el nodo más pequeño en su subárbol derecho)
+            sucesor = nodoActual.encontrarSucesor() # Encuentra el sucesor (el valor mas chico que el nodo actual, lo encuentro en el derecho)
             # Primero actualizamos el balanceo del padre del sucesor antes de mover el sucesor
             self.actualizarEquilibrioEliminacion(sucesor.padre, 'sucesor', sucesor.esHijoIzquierdo())
-            sucesor.empalmar() # Desconecta el sucesor de su posición originalf
+            sucesor.empalmar() # elimina el sucesor del árbol (lo empalma con su padre)
             nodoActual.clave = sucesor.clave # Reemplaza la clave del nodo a eliminar con la clave del sucesor
             nodoActual.valor = sucesor.valor # Reemplaza el valor del nodo a eliminar con el valor del sucesor
+
         else: # Caso 3: El nodo a eliminar tiene un solo hijo (izquierdo o derecho)
-            if nodoActual.tieneHijoIzquierdo(): # Si tiene hijo izquierdo
+            if nodoActual.tieneHijoIzquierdo(): # verifico si tiene hijo izquierdo
                 if nodoActual.esHijoIzquierdo(): # Si el nodo actual es hijo izquierdo de su padre
-                    nodoActual.hijoIzquierdo.padre = nodoActual.padre # El hijo del nodo a eliminar se conecta al padre del nodo a eliminar
-                    nodoActual.padre.hijoIzquierdo = nodoActual.hijoIzquierdo # El padre del nodo a eliminar apunta al hijo
+                    nodoActual.hijoIzquierdo.padre = nodoActual.padre #ahora el el hijo izq del nodoActual se conecta con el padre de nodoActual
+                    nodoActual.padre.hijoIzquierdo = nodoActual.hijoIzquierdo #le aviso al padre que su hijo izq ya no es nodoActual
                 elif nodoActual.esHijoDerecho(): # Si el nodo actual es hijo derecho de su padre
-                    nodoActual.hijoIzquierdo.padre = nodoActual.padre # El hijo del nodo a eliminar se conecta al padre del nodo a eliminar
-                    nodoActual.padre.hijoDerecho = nodoActual.hijoIzquierdo # El padre del nodo a eliminar apunta al hijo
+                    nodoActual.hijoIzquierdo.padre = nodoActual.padre #lo mismo que con izq
+                    nodoActual.padre.hijoDerecho = nodoActual.hijoIzquierdo 
                 else: # Si el nodo actual es la raíz y tiene un hijo izquierdo
                     nodoActual.hijoIzquierdo.padre = None # El hijo izquierdo se convierte en la nueva raíz (sin padre)
                     self.raiz = nodoActual.hijoIzquierdo # Actualiza la raíz del árbol
                 self.actualizarEquilibrioEliminacion(nodoActual.padre, 'un_hijo', nodoActual.esHijoIzquierdo()) # Actualiza el balance
             else: # Si tiene hijo derecho
                 if nodoActual.esHijoIzquierdo(): # Si el nodo actual es hijo izquierdo de su padre
-                    nodoActual.hijoDerecho.padre = nodoActual.padre # El hijo del nodo a eliminar se conecta al padre del nodo a eliminar
-                    nodoActual.padre.hijoIzquierdo = nodoActual.hijoDerecho # El padre del nodo a eliminar apunta al hijo
+                    nodoActual.hijoDerecho.padre = nodoActual.padre # El hijo der del nodoActual se conecta con el padre de nodoActual
+                    nodoActual.padre.hijoIzquierdo = nodoActual.hijoDerecho # le aviso al padre que su hijo der ya no es nodoActual
                 elif nodoActual.esHijoDerecho(): # Si el nodo actual es hijo derecho de su padre
-                    nodoActual.hijoDerecho.padre = nodoActual.padre # El hijo del nodo a eliminar se conecta al padre del nodo a eliminar
-                    nodoActual.padre.hijoDerecho = nodoActual.hijoDerecho # El padre del nodo a eliminar apunta al hijo
+                    nodoActual.hijoDerecho.padre = nodoActual.padre # lo mismo q con izq
+                    nodoActual.padre.hijoDerecho = nodoActual.hijoDerecho 
                 else: # Si el nodo actual es la raíz y tiene un hijo derecho
                     nodoActual.hijoDerecho.padre = None # El hijo derecho se convierte en la nueva raíz (sin padre)
                     self.raiz = nodoActual.hijoDerecho # Actualiza la raíz del árbol
@@ -200,8 +213,10 @@ class ArbolBinarioEquilibrado:
         if tipo_eliminacion == 'hoja': # Si el nodo eliminado era una hoja
             if era_hijo_izquierdo: # Y era el hijo izquierdo
                 nodo.factorEquilibrio -= 1 # El subárbol izquierdo del padre se acortó
+                # el fe disminuye
             else: # Y era el hijo derecho
                 nodo.factorEquilibrio += 1 # El subárbol derecho del padre se acortó
+                #el fe aumenta
         elif tipo_eliminacion == 'un_hijo': # Si el nodo eliminado tenía un solo hijo
             if era_hijo_izquierdo: # Y era el hijo izquierdo
                 nodo.factorEquilibrio -= 1 # El subárbol izquierdo del padre se acortó
@@ -216,9 +231,7 @@ class ArbolBinarioEquilibrado:
         # Reequilibra si el factor de equilibrio está fuera de rango
         if nodo.factorEquilibrio > 1 or nodo.factorEquilibrio < -1:
             self.reequilibrar(nodo) # Realiza las rotaciones necesarias
-            # Después de reequilibrar, si el nodo rotado no es la raíz y su FE se volvió 0 (rotación simple)
-            # no se necesita propagar más. Si su FE no es 0 (rotación doble), se propaga.
-            # Aquí, la lógica simplificada asume que reequilibrar ya maneja la propagación del factor de equilibrio.
+            
         elif nodo.factorEquilibrio == 0: # Si el factor de equilibrio del nodo se volvió 0 (después de un ajuste)
             if nodo.padre: # Y tiene padre
                 # Propagamos el ajuste hacia arriba, porque el cambio de altura se propagó hasta aquí
@@ -234,6 +247,7 @@ class ArbolBinarioEquilibrado:
         return in_order(self.raiz)
     
     def __contains__(self, clave):
+        #permite usar el operador in para verificar si una clave está en el árbol
         if self._obtener(clave, self.raiz):
             return True
         else:

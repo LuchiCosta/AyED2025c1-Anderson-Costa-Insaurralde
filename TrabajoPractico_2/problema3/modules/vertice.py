@@ -3,7 +3,7 @@ class Vertice:
     def __init__(self,clave):
         # Constructor del objeto Vertice.
         self.id = clave.strip()
-        self.vecinos = {}
+        self.vecinos = {} #guarda los vecinos del vertice y sus distancias
         self._distancia = 0
         self.predecesor = None
         
@@ -17,15 +17,15 @@ class Vertice:
     
     def agregarVecino(self, vecino, distancia=0):
         # Permite agregar vecinos a un vértice.
-        self.vecinos[vecino] = distancia
+        self.vecinos[vecino] = distancia #guardo el vecino y la distancia en el diccionario
 
     def __str__(self):
-        # Método mágico que permite la representacion del objeto como string.
+        # Método que permite la representacion del objeto como string.
         return str(self.id) + ' Vecinos: ' + str([x.id for x in self.vecinos])
 
     def obtenerConexiones(self):
         # Devuelve los vecinos.
-        return self.vecinos.keys()
+        return self.vecinos.keys() #claves del diccionario (nombres)
 
     def obtenerId(self):
         # Devuelve el ID del vértice.

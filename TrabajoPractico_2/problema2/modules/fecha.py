@@ -70,7 +70,7 @@ class Fecha:
             return True
         else:
             return False
-# ampliar para poder sumar dias uno por uno
+
     def to_date(self):
         """Convierte el objeto Fecha a un objeto datetime.date"""
         return date(self._anio, self._mes, self._dia)

@@ -12,18 +12,20 @@ class Temperaturas_DB:
 
 
     def guardar_temperatura(self, temperatura:int, fecha:str):
+        #O log n
         # guarda la medida de temperatura asociada a la fecha
         if type(fecha) == str:
             print("fecha paso")
             fecha = fecha.rsplit("/") # right space split - lo separa a la derecha
-            fecha = Fecha(int(fecha[0]), int(fecha[1]), int(fecha[2]))
+            fecha = Fecha(int(fecha[0]), int(fecha[1]), int(fecha[2])) #creo un objeto fecha
             print("La fecha que se guardo es:",  fecha)
         else:
             print(" No se guardo nada :(")
             
-        self.__arbol.agregar(fecha, temperatura)
+        self.__arbol.agregar(fecha, temperatura) #grego al arbol
 
     def devolver_temperatura(self, fecha):
+        # O log n
         # Acepta tanto string como objeto Fecha
         if isinstance(fecha, str):
             fecha = fecha.rsplit("/")
@@ -33,7 +35,7 @@ class Temperaturas_DB:
             return None
 
         try:
-            temp_salida = self.__arbol.obtener(fecha)
+            temp_salida = self.__arbol.obtener(fecha) #busco la fecha en el arbol
             return temp_salida
         except KeyError:
             print("No hay una temperatura para esa fecha")
@@ -41,6 +43,7 @@ class Temperaturas_DB:
         
         
     def max_temp_rango(self, fecha1, fecha2):
+        #O k log n
     # Convierte strings a objetos Fecha si es necesario
         if type(fecha1) == str:
             fecha1 = fecha1.rsplit("/")
@@ -51,7 +54,7 @@ class Temperaturas_DB:
             fecha2 = Fecha(int(fecha2[0]), int(fecha2[1]), int(fecha2[2]))
         
         maxima_temperatura = None
-        it = Iterador(self.__arbol, fecha1)
+        it = Iterador(self.__arbol, fecha1) #recorre el arbol desde fecha1 en adelante
 
         for nodo in it:
         # Suponiendo que nodo.clave y nodo.valor existen
@@ -64,6 +67,7 @@ class Temperaturas_DB:
 
 
     def min_temp_rango(self, fecha1, fecha2):
+        # O k log n
         if type(fecha1) == str:
             fecha1 = fecha1.rsplit("/")
             fecha1 = Fecha(int(fecha1[0]), int(fecha1[1]), int(fecha1[2]))
@@ -73,16 +77,18 @@ class Temperaturas_DB:
 
         minima_temperatura = None
         fecha_actual = fecha1
+
         while fecha_actual <= fecha2:
             temp = self.devolver_temperatura(fecha_actual)
             if temp is not None:
-                if (minima_temperatura is None) or (temp < minima_temperatura):
+                if (minima_temperatura is None) or (temp < minima_temperatura): #si no hay min temp o temp es mmenor q la min 
                     minima_temperatura = temp
-            fecha_actual = fecha_actual.sumar_dias(1)
+            fecha_actual = fecha_actual.sumar_dias(1) #paso a la siguiente fecha
 
         return minima_temperatura
     
     def temp_extremos_rango(self, fecha1, fecha2):
+        # O k log n
         # devuelve la temperatura minima y maxima entre los rangos fecha1 y fecha2 inclusive, fecha1 menor que fecha2
         if type(fecha1) == str:
             fecha1 = fecha1.rsplit("/")
@@ -100,8 +106,8 @@ class Temperaturas_DB:
         return extremos
     
     def borrar_temperatura(self, fecha:str):
+        # O log n
         # recibe una fecha y elimina del arbol la medicion correspondiente a esa fecha
-        # borra el nodo del arbol (ver en el libro)
         if type(fecha) == str:
             print("fecha paso")
             fecha = fecha.rsplit("/")
@@ -114,9 +120,10 @@ class Temperaturas_DB:
             print("No hay una temperatura para esa fecha")
 
     def devolver_temperaturas(self, fecha1, fecha2):
+        # O k log n
         # devuelve un listado de las mediciones de temperatura en el rango recibido 
         # por el parametro en formato dd/mm/aaaa
-        # temp en gradoc centigrados ordenado por fechas
+        # temp en grados centigrados ordenado por fechas
         fechas_en_rango = []
 
         if type(fecha1) == str:
@@ -137,11 +144,13 @@ class Temperaturas_DB:
         return fechas_en_rango
 
     def cantidad_muestras(self):
+        # O 1
         # devuelve la cantidad de muestras de la BD
         # seria la cantidad de nodos que tiene el arbol
         return f"Cantidad de muestras en la base de datos: {self.__arbol.tamano}" 
     
     def borrar (self):
+        # O 1
         # borra el arbol
         self.__arbol = ArbolBinarioEquilibrado()
     

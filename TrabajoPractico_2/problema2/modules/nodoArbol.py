@@ -66,13 +66,14 @@ class NodoArbol:
     
     def empalmar(self):
         # Desconecta este nodo de su padre y ajusta los punteros de los hijos
-        if self.padre:
+        if self.padre: #si no es la raiz
             if self.esHijoIzquierdo():
-                self.padre.hijoIzquierdo = self.hijoDerecho
+                #esto porque el sucesor esta en el derecho 
+                self.padre.hijoIzquierdo = self.hijoDerecho #apunto al hijo derecho del nodo
             else:
-                self.padre.hijoDerecho = self.hijoDerecho
+                self.padre.hijoDerecho = self.hijoDerecho #apunto al hijo derecho del nodo
         if self.hijoDerecho:
-            self.hijoDerecho.padre = self.padre
+            self.hijoDerecho.padre = self.padre #actualizo el padre del hijo derecho
 
     def tieneHijoIzquierdo(self):
         return self.hijoIzquierdo
@@ -99,6 +100,7 @@ class NodoArbol:
         return self.hijoDerecho and self.hijoIzquierdo
 
     def reemplazarDatoDeNodo(self,clave,valor,hizq,hder):
+        #reemplazo datos del nodo actual con nuevos valores
         self.clave = clave
         self.valor = valor
         self.hijoIzquierdo = hizq
@@ -113,7 +115,7 @@ class NodoArbol:
         sucesor = None
         if self.tieneHijoDerecho():
             sucesor = self.hijoDerecho
-            while sucesor.tieneHijoIzquierdo():
+            while sucesor.tieneHijoIzquierdo(): #voy al izquierdo xq estan los menores
                 sucesor = sucesor.hijoIzquierdo
         return sucesor
     
